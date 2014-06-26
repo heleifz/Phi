@@ -1,0 +1,18 @@
+{
+    "name": "helei/phi",
+    "description": "Yet another static site generator.",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "helei",
+            "email": "heleifz@126.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "erusev/parsedown-extra": "dev-master",
+        "twig/twig": "1.*",
+        "nategood/commando": "*",
+        "symfony/finder": "2.3.*@dev"
+    }
+}
