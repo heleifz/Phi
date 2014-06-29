@@ -6,24 +6,26 @@ include "./vendor/autoload.php";
 
 use Symfony\Component\Finder\Finder;
 
-$phar = new \Phar('phi.phar', 1, 'phi');
+$phar = new \Phar('phi.phar', 1, 'phi.phar');
 $phar->setSignatureAlgorithm(\Phar::SHA1);
 $phar->startBuffering();
 
 $finder = new Finder();
 $finder->files()
-	->ignoreVCS(true)
-	->name('*.php')
-	->notName('compile.php')
-	->in(".");
+       ->ignoreVCS(true)
+       ->name('*.php')
+       ->name('*.json')
+       ->name('*.html')
+       ->notName('compile.php')
+       ->in(".");
 
-foreach ($finder as $file)
-{
+foreach ($finder as $file) {
 	$path = strtr($file->getRelativePathname(), '\\', '/');
-    $content = file_get_contents($file);
-    $phar->addFromString($path, $content);
+	$phar->addFile($path);
 }
 
-$phar->setStub('<?php Phar::mapPhar(); include("phar://phi/phi.php"); __HALT_COMPILER();');
+$phar->setStub('<?php Phar::mapPhar(); include("phar://phi.phar/phi.php"); __HALT_COMPILER();');
+
 $phar->stopBuffering();
 
+echo "Done!".PHP_EOL;
