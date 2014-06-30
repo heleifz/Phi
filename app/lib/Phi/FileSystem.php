@@ -62,4 +62,8 @@ class FileSystem {
 		return;
 	}
 
+	public static function getFileExtension($path) {
+		return pathinfo($path, PATHINFO_EXTENSION);
+	}
+
 }

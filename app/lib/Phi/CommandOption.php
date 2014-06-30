@@ -92,7 +92,7 @@ class CommandOption {
 		$isNamed = !$this->isPositional();
 
 		if ($isNamed) {
-			$help .= PHP_EOL.(mb_strlen($this->name, 'UTF-8') === 1?
+			$help .= PHP_EOL.' '.(mb_strlen($this->name, 'UTF-8') === 1?
 				'-':'--').$this->name;
 			if (!empty($this->aliases)) {
 				foreach ($this->aliases as $alias) {
@@ -103,10 +103,14 @@ class CommandOption {
 			if (!$this->isBoolean()) {
 				$help .= ' '.'<argument>';
 			}
-			$help .= PHP_EOL;
 		} else {
-			$help .= "arg {$this->name}" .PHP_EOL;
+			$help .= " arg {$this->name}";
 		}
+		if ($this->hasDefault())
+		{
+			$help .= "(default ".($this->getDefault()).")";
+		}
+		$help .= PHP_EOL;
 
 		if ($this->isRequired()) {
 			$titleLine = ' Required.';
@@ -114,8 +118,13 @@ class CommandOption {
 			$titleLine = '';
 		}
 
-		$description = $titleLine.$this->description;
-		$help .= $description;
+		$descriptionArray = explode(PHP_EOL, $this->description);
+		$description = '';
+		foreach ($descriptionArray as $d) {
+			$description .= ' '.$d.PHP_EOL;	
+		}
+
+		$help .= $titleLine.$description;
 
 		return $help;
 	}

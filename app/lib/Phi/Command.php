@@ -7,13 +7,14 @@ namespace Phi;
 
 class Command {
 
-	const OPTION_TYPE_ARGUMENT = 1;// e.g. foo
-	const OPTION_TYPE_SHORT    = 2;// e.g. -u
-	const OPTION_TYPE_VERBOSE  = 4;// e.g. --username
+	const OPTION_TYPE_ARGUMENT = 1; // e.g. foo
+	const OPTION_TYPE_SHORT    = 2; // e.g. -u
+	const OPTION_TYPE_VERBOSE  = 4; // e.g. --username
 
 	private
 
 	$name      = null,
+	$description = "",
 	$options   = array(),
 	$arguments = array(),
 	$flags     = array(),
@@ -21,8 +22,7 @@ class Command {
 	$tokens           = array(),
 	$help             = null,
 	$parsed           = false,
-	$use_default_help = true,
-	$trap_errors      = true;
+	$use_default_help = true;
 
 	public function __construct($options, $tokens = array()) {
 		$this->setOptions($options);
@@ -35,6 +35,12 @@ class Command {
 	 * @return Option
 	 */
 	public function setOptions($options) {
+
+		$this->options = array();
+		$this->arguments = array();
+		$this->flags = array();
+		$this->parsed = false;
+
 		$nameless_option_counter = 0;
 		foreach ($options as $option) {
 			if ($option->isPositional()) {
@@ -46,7 +52,14 @@ class Command {
 				$this->options[$key] = $option;
 			}
 		}
-		$this->parsed = false;
+	}
+
+	public function setDescription($description) {
+		$this->description = $description;	
+	}
+
+	public function getDescription() {
+		return $this->description;
 	}
 
 	public function useDefaultHelp($help = true) {
@@ -81,94 +94,82 @@ class Command {
 	public function parse() {
 
 		$this->parsed = true;
-		try {
-			$tokens = $this->tokens;
+		$tokens = $this->tokens;
 
-			// throw away the executed filename
-			$this->name = array_shift($tokens);
+		// throw away the executed filename
+		$this->name = array_shift($tokens);
 
-			$keyvals = array();
-			$count   = 0;// standalone argument count
+		$keyvals = array();
+		$count   = 0;// standalone argument count
 
-			while (!empty($tokens)) {
-				$token = array_shift($tokens);
+		while (!empty($tokens)) {
+			$token = array_shift($tokens);
 
-				list($name, $type) = $this->_parseOption($token);
+			list($name, $type) = $this->_parseOption($token);
 
-				if ($type === self::OPTION_TYPE_ARGUMENT) {
-					if ($this->hasOption($count)) {
-						$keyvals[$count] = $name;
-						$count++;
-					} else {
-						throw new \Exception(sprintf('Unexpected argument : %s', $name));
-					}
+			if ($type === self::OPTION_TYPE_ARGUMENT) {
+				if ($this->hasOption($count)) {
+					$keyvals[$count] = $name;
+					$count++;
 				} else {
-					// Short circuit if the help flag was set and we're using default help
-					if ($this->use_default_help === true && $name === 'help') {
-						$this->printHelp();
-						exit;
-					}
-					$option = $this->getOption($name);
-					if ($option->isBoolean()) {
-						// inverse of the default, as expected
-						$keyvals[$option->getName()] = !$option->getDefault();
-					} else {
-						// the next token MUST be an "argument" and not another flag/option
-						$token            = array_shift($tokens);
-						list($val, $type) = $this->_parseOption($token);
-						if ($type !== self::OPTION_TYPE_ARGUMENT) {
-							throw new \Exception(sprintf('Unable to parse option %s: Expected an argument', $token));
-						}
-						$keyvals[$option->getName()] = $val;
-					}
+					throw new \Exception(sprintf('Unexpected argument : %s', $name));
 				}
-			}
-
-			foreach ($this->options as $k => $v) {
-				if (empty($keyvals[$v->getName()])) {
-					if ($v->isRequired()) {
-						if ($v->hasDefault()) {
-							$keyvals[$v->getName()] = $v->getDefault();
-						} else {
-							throw new \Exception(sprintf('Required %s %s must be specified',
-									$v->isPositional()?
-									'option':'argument', $v->getName()));
-						}
-					}
+			} else {
+				// Short circuit if the help flag was set and we're using default help
+				if ($this->use_default_help === true && $name === 'help') {
+					$this->printHelp();
+					exit;
 				}
-			}
-
-			foreach ($keyvals as $k => $v) {
-				$option    = $this->options[$k];
-				$validator = $option->getValidator();
-				if (!call_user_func($validator[0], $v)) {
-					throw new \Exception(sprintf('Invalid %s : %s',
-							$option->isPositional()?'argument':'flag', $validator[1]));
-				}
-			}
-
-			// fill in the parsing results
-			foreach ($keyvals as $k => $v) {
-				if (is_numeric($k)) {
-					$this->arguments[$k] = $v;
+				$option = $this->getOption($name);
+				if ($option->isBoolean()) {
+					// inverse of the default, as expected
+					$keyvals[$option->getName()] = !$option->getDefault();
 				} else {
-					$this->flags[$k] = $v;
+					// the next token MUST be an "argument" and not another flag/option
+					$token            = array_shift($tokens);
+					list($val, $type) = $this->_parseOption($token);
+					if ($type !== self::OPTION_TYPE_ARGUMENT) {
+						throw new \Exception(sprintf('Unable to parse option %s: Expected an argument', $token));
+					}
+					$keyvals[$option->getName()] = $val;
 				}
 			}
-
-		} catch (\Exception $e) {
-			$this->error($e);
 		}
-	}
 
-	public function error(\Exception $e) {
-
-		if ($this->trap_errors !== true) {
-			throw $e;
+		foreach ($this->options as $k => $v) {
+			if (is_numeric($k)) {
+				$idx = $k;
+			} else {
+				$idx = $v->getName();
+			}
+			if (empty($keyvals[$idx])) {
+				if ($v->hasDefault()) {
+					$keyvals[$idx] = $v->getDefault();
+				} elseif ($v->isRequired()) {
+					throw new \Exception(sprintf('Required %s %s must be specified',
+							$v->isPositional()?
+							'option':'argument', $idx));
+				}
+			}	
 		}
-		$error = sprintf('ERROR: %s ', $e->getMessage());
-		echo $error.PHP_EOL;
-		exit(1);
+
+		foreach ($keyvals as $k => $v) {
+			$option    = $this->options[$k];
+			$validator = $option->getValidator();
+			if (!call_user_func($validator[0], $v)) {
+				throw new \Exception(sprintf('Invalid %s : %s',
+						$option->isPositional()?'argument':'flag', $validator[1]));
+			}
+		}
+
+		// fill in the parsing results
+		foreach ($keyvals as $k => $v) {
+			if (is_numeric($k)) {
+				$this->arguments[$k] = $v;
+			} else {
+				$this->flags[$k] = $v;
+			}
+		}
 	}
 
 	/**
@@ -251,16 +252,6 @@ class Command {
 	}
 
 	/**
-	 * @param bool $trap when true, exceptions will be caught by Commando and
-	 *    printed cleanly to standard error.
-	 * @return Command
-	 */
-	public function trapErrors($trap = true) {
-		$this->trap_errors = $trap;
-		return $this;
-	}
-
-	/**
 	 * @return string help docs
 	 */
 	public function getHelp() {
@@ -269,9 +260,12 @@ class Command {
 		if (empty($this->name) && isset($this->tokens[0])) {
 			$this->name = $this->tokens[0];
 		}
-		$help = '';
 
-		$help .= $this->name.PHP_EOL.PHP_EOL;
+		$help = PHP_EOL.' '.$this->name;
+		if (strlen($this->getDescription()) > 0) {
+			$help .= ' : '.$this->getDescription();
+		}
+		$help .= PHP_EOL.PHP_EOL;
 
 		$seen = array();
 		$keys = array_keys($this->options);
@@ -281,7 +275,7 @@ class Command {
 			if (in_array($option, $seen)) {
 				continue;
 			}
-			$help .= $option->getHelp().PHP_EOL;
+			$help .= $option->getHelp();
 			$seen[] = $option;
 		}
 		return $help;

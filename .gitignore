@@ -1,6 +1,6 @@
 *.phar
 *.sublime*
-testproj
+hello
 /vendor
 composer.lock
 .DS_Store

@@ -21,16 +21,8 @@ class ScaffoldService implements \Phi\Service {
 
 	public function getCommandOptions() {
 		$path = new \Phi\CommandOption();
-		$path->setDescription("Path to the destination.");
-		$path->setDefault('.');
-		$path->setValidator(
-			function ($path) {
-				if (!call_user_func(array('\\Phi\\FileSystem', 'isValidPath'), $path)) {
-					return false;
-				} else {
-					return true;
-				}
-			}, "Invalid path.");
+		$path->setDescription("Path to the destination.")->setDefault('.')->setRequired()
+			 ->setValidator(array('\\Phi\\FileSystem', 'isValidPath'), "Invalid path.");
 		return array($path);
 	}
 
@@ -41,7 +33,7 @@ class ScaffoldService implements \Phi\Service {
 	 */
 	private function createDirectory($path) {
 		if (file_exists($path)) {
-			$this->YesOrExit("Path / file exists, continue ?");
+			$this->yesOrExit("Path / file exists, continue ?");
 			if (is_dir($path)) {
 				\Phi\FileSystem::deleteDirectoryContents($path);
 				return;
@@ -50,9 +42,7 @@ class ScaffoldService implements \Phi\Service {
 			}
 		}
 		if (!@mkdir($path, 775, true)) {
-			$error = error_get_last();
-			echo "Cannot create directory, detail: \"".$error['message']."\"";
-			exit;
+			throw new \Exception("Cannot create directory : $path.");
 		}
 	}
 
@@ -63,7 +53,7 @@ class ScaffoldService implements \Phi\Service {
 		}
 	}
 
-	private function YesOrExit($question) {
+	private function yesOrExit($question) {
 		echo "$question (Y/N):";
 		$input = trim(fgets(STDIN));
 		if (strtolower($input) == 'y') {
