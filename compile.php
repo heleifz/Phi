@@ -16,6 +16,8 @@ $finder->files()
        ->name('*.php')
        ->name('*.json')
        ->name('*.html')
+       ->name('*.md')
+       ->notName('readme.md')
        ->notName('compile.php')
        ->in(".");
 
