@@ -4,6 +4,12 @@ namespace Phi\ScaffoldService;
 
 class ScaffoldService implements \Phi\Service {
 
+	private $fileSystem;
+
+	public function __construct(\Phi\FileSystem $fileSystem) {
+		$this->fileSystem = $fileSystem;
+	}
+
 	public function getName() {
 		return "scaffold";
 	}
@@ -15,14 +21,14 @@ class ScaffoldService implements \Phi\Service {
 	public function execute($arguments, $flags) {
 		$path = $arguments[0];
 		$this->createDirectory($path);
-		@\Phi\FileSystem::copyDirectoryRecursively(__DIR__ .'/scaffold', $path);
+		$this->fileSystem->copyDirectory(__DIR__ .'/scaffold', $path);
 		$this->createRemainingDirectories($path);
 	}
 
 	public function getCommandOptions() {
 		$path = new \Phi\CommandOption();
 		$path->setDescription("Path to the destination.")->setDefault('.')->setRequired()
-			 ->setValidator(array('\\Phi\\FileSystem', 'isValidPath'), "Invalid path.");
+			 ->setValidator(array($this->fileSystem, 'isValidPath'), "Invalid path.");
 		return array($path);
 	}
 
@@ -32,16 +38,16 @@ class ScaffoldService implements \Phi\Service {
 	 * @param string $path
 	 */
 	private function createDirectory($path) {
-		if (file_exists($path)) {
+		if ($this->fileSystem->exists($path)) {
 			$this->yesOrExit("Path / file exists, continue ?");
-			if (is_dir($path)) {
-				\Phi\FileSystem::deleteDirectoryContents($path);
+			if ($this->fileSystem->isDirectory($path)) {
+				$this->fileSystem->clearDirectory($path);
 				return;
 			} else {
-				unlink($path);
+				$this->fileSystem->delete($path);
 			}
 		}
-		if (!@mkdir($path, 775, true)) {
+		if (!$this->fileSystem->makeDirectory($path, 775, true)) {
 			throw new \Exception("Cannot create directory : $path.");
 		}
 	}
@@ -49,7 +55,7 @@ class ScaffoldService implements \Phi\Service {
 	private function createRemainingDirectories($path) {
 		$folders = array('site', 'assets', 'templates', 'articles');
 		foreach ($folders as $folder) {
-			@mkdir($path.'/'.$folder, 775, true);
+			$this->fileSystem->makeDirectory($path.'/'.$folder, 775, true);
 		}
 	}
 

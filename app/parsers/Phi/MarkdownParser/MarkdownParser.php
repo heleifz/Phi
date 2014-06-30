@@ -1,8 +1,8 @@
 <?php
 
-namespace Phi;
+namespace Phi\MarkdownParser;
 
-class Markdown extends \ParsedownExtra implements Parser {
+class MarkdownParser extends \ParsedownExtra implements \Phi\Parser {
 
 	public function getExtensions() {
 		return array('md', 'markdown', 'mdown');

@@ -7,7 +7,40 @@ namespace Phi;
  */
 class FileSystem {
 
-	public static function isValidPath($path) {
+	public function exists($path) {
+		return file_exists($path);
+	}
+
+	public function read($path) {
+		return file_get_contents($path);	
+	}
+
+	public function delete($path) {
+		return @unlink($path);
+	}
+
+	public function move($src, $dst) {
+		return @rename($src, $dst);
+	}
+
+	public function copy($src, $dst) {
+		return @copy($src, $dst);
+	}
+
+	public function isDirectory($path) {
+		return is_dir($path);
+	}
+
+	public function isFile($path) {
+		return is_file($path);
+	}
+
+	public function makeDirectory($path, $mode = 755, $recursive = false)
+	{
+		return @mkdir($path, $mode, $recursive);
+	}
+
+	public function isValidPath($path) {
 		$path = trim($path);
 		if (preg_match('/^[^*?"<>|:]*$/', $path)) {return true;
 		}
@@ -31,13 +64,13 @@ class FileSystem {
 		return false;
 	}
 
-	public static function copyDirectoryRecursively($src, $dst) {
+	public function copyDirectory($src, $dst) {
 		$dir = opendir($src);
 		@mkdir($dst);
 		while (false !== ($file = readdir($dir))) {
 			if (($file != '.') && ($file != '..')) {
 				if (is_dir($src.'/'.$file)) {
-					self::copyDirectoryRecursively($src.'/'.$file, $dst.'/'.$file);
+					self::copyDirectory($src.'/'.$file, $dst.'/'.$file);
 				} else {
 					copy($src.'/'.$file, $dst.'/'.$file);
 				}
@@ -46,7 +79,7 @@ class FileSystem {
 		closedir($dir);
 	}
 
-	public static function deleteDirectory($dir) {
+	public function deleteDirectory($dir) {
 		$files = array_diff(scandir($dir), array('.', '..'));
 		foreach ($files as $file) {
 			(is_dir("$dir/$file"))?self::deleteDirectory("$dir/$file"):unlink("$dir/$file");
@@ -54,7 +87,7 @@ class FileSystem {
 		return rmdir($dir);
 	}
 
-	public static function deleteDirectoryContents($dir) {
+	public function clearDirectory($dir) {
 		$files = array_diff(scandir($dir), array('.', '..'));
 		foreach ($files as $file) {
 			(is_dir("$dir/$file"))?self::deleteDirectory("$dir/$file"):unlink("$dir/$file");
@@ -62,7 +95,7 @@ class FileSystem {
 		return;
 	}
 
-	public static function getFileExtension($path) {
+	public function getExtension($path) {
 		return pathinfo($path, PATHINFO_EXTENSION);
 	}
 

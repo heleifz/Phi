@@ -8,10 +8,12 @@ class GenerateService implements \Phi\Service {
 
 	private $finder;
 	private $dispatcher;
+	private $fileSystem;
 
-	public function __construct(Finder $finder, \Phi\ParserDispatcher $dispatcher) {
+	public function __construct(Finder $finder, \Phi\ParserDispatcher $dispatcher, \Phi\FileSystem $fileSystem) {
 		$this->finder = $finder;
 		$this->dispatcher = $dispatcher;
+		$this->fileSystem = $fileSystem;
 	}
 
 	public function getName() {
@@ -40,7 +42,8 @@ class GenerateService implements \Phi\Service {
 		$path = new \Phi\CommandOption();
 		$path->setDescription("Path to the Phi application directory.")
 			 ->setDefault('.')->setRequired()
-			 ->setValidator('is_dir', "Invalid Phi application path");
+			 ->setValidator(array($this->fileSystem, 'isDirectory'),
+			 	            "Invalid Phi application path");
 		return array($path);
 	}
 }

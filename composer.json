@@ -17,7 +17,7 @@
     },
     "autoload" : {
         "psr-0": {
-            "Phi": ["app/lib", "app/services"]
+            "Phi": ["app/core", "app/services", "app/parsers"]
         }
     }
 }

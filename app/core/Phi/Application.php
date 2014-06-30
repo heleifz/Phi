@@ -4,11 +4,17 @@ namespace Phi;
 
 class Application extends \Illuminate\Container\Container {
 
+	private $coreComponents = array(
+		'Phi\\ServiceDispatcher',
+		'Phi\\ParserDispatcher',
+		'Phi\\ErrorHandler',
+		'Phi\\FileSystem',
+	);
+
 	public function __construct() {
-		$this->instance('Phi\\Application', $this);	
-		$this->instance('Phi\\ServiceDispatcher', new ServiceDispatcher);
-		$this->instance('Phi\\ParserDispatcher', new ParserDispatcher);
-		$this->instance('Phi\\ErrorHandler', new \Phi\ErrorHandler);
+		foreach ($this->coreComponents as $component) {
+			$this->instance($component, $this->make($component));
+		}
 	}
 
 	public function registerService($className) {

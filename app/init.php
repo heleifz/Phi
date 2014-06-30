@@ -7,7 +7,7 @@ $app = new Phi\Application;
 /**
  * Register parsers
  */
-$app->registerParser('\\Phi\\Markdown');
+$app->registerParser('\\Phi\\MarkdownParser\\MarkdownParser');
 
 /**
  * Register command line services.
