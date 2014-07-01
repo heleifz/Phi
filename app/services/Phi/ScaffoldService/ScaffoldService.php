@@ -5,9 +5,11 @@ namespace Phi\ScaffoldService;
 class ScaffoldService implements \Phi\Service {
 
 	private $fileSystem;
+	private $console;
 
-	public function __construct(\Phi\FileSystem $fileSystem) {
+	public function __construct(\Phi\FileSystem $fileSystem, \Phi\Console $console) {
 		$this->fileSystem = $fileSystem;
+		$this->console = $console;
 	}
 
 	public function getName() {
@@ -39,7 +41,9 @@ class ScaffoldService implements \Phi\Service {
 	 */
 	private function createDirectory($path) {
 		if ($this->fileSystem->exists($path)) {
-			$this->yesOrExit("Path / file exists, continue ?");
+			if (!$this->console->yesOrNo("Path / file exists, continue ?")) {
+				exit(0);
+			}
 			if ($this->fileSystem->isDirectory($path)) {
 				$this->fileSystem->clearDirectory($path);
 				return;
@@ -58,15 +62,4 @@ class ScaffoldService implements \Phi\Service {
 			$this->fileSystem->makeDirectory($path.'/'.$folder, 775, true);
 		}
 	}
-
-	private function yesOrExit($question) {
-		echo "$question (Y/N):";
-		$input = trim(fgets(STDIN));
-		if (strtolower($input) == 'y') {
-			return;
-		} else {
-			exit;
-		}
-	}
-
 }

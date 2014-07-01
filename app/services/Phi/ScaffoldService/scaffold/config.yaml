@@ -1,0 +1,7 @@
+sitename : Hello world
+author : heleifz
+templates : 
+	article : article.html
+	list    : list.html
+context : 
+	foo : bar

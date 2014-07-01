@@ -35,6 +35,14 @@ class FileSystem {
 		return is_file($path);
 	}
 
+	public function getExtension($path) {
+		return pathinfo($path, PATHINFO_EXTENSION);
+	}
+
+	public function write($path, $content) {
+		return @file_put_contents($path, $content);
+	}
+
 	public function makeDirectory($path, $mode = 755, $recursive = false)
 	{
 		return @mkdir($path, $mode, $recursive);
@@ -94,9 +102,4 @@ class FileSystem {
 		}
 		return;
 	}
-
-	public function getExtension($path) {
-		return pathinfo($path, PATHINFO_EXTENSION);
-	}
-
 }

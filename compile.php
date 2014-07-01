@@ -15,9 +15,11 @@ $finder->files()
        ->ignoreVCS(true)
        ->name('*.php')
        ->name('*.json')
+       ->name('*.yaml')
        ->name('*.html')
        ->name('*.md')
        ->notName('readme.md')
+       ->notPath('test')
        ->notName('compile.php')
        ->in(".");
 

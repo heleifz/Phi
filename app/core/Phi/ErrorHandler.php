@@ -2,9 +2,15 @@
 
 namespace Phi;
 
+/**
+ * Error handler, simply print out all error/exception messages.
+ */
 class ErrorHandler {
 
-	public function __construct() {
+	private $console;
+
+	public function __construct(\Phi\Console $console) {
+		$this->console = $console;
 		set_error_handler(array($this, 'handleError'));	
 		set_exception_handler(array($this, 'handleException'));
 	}
@@ -17,7 +23,7 @@ class ErrorHandler {
 
 	public function handleException($exception) {
 		$error = sprintf('[ERROR] %s ', $exception->getMessage());
-		echo $error.PHP_EOL;
+		$this->console->writeLine($error);
         exit(1);
     }
 

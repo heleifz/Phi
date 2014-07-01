@@ -5,15 +5,15 @@ namespace Phi;
 class Application extends \Illuminate\Container\Container {
 
 	private $coreComponents = array(
-		'Phi\\ServiceDispatcher',
-		'Phi\\ParserDispatcher',
-		'Phi\\ErrorHandler',
+		'Phi\\Console',
 		'Phi\\FileSystem',
+		'Phi\\ParserDispatcher',
+		'Phi\\ServiceDispatcher',
 	);
 
 	public function __construct() {
 		foreach ($this->coreComponents as $component) {
-			$this->instance($component, $this->make($component));
+			$this->singleton($component);
 		}
 	}
 
