@@ -1,0 +1,15 @@
+<?php
+
+namespace Phi\TwigGenerator;
+
+class :classname implements \Phi\Generator {
+
+	public function getName() {
+		// name of your generator
+		return ":name";
+	}
+
+	public function generate($context) {
+		// generate result
+	}
+}

@@ -41,7 +41,7 @@ class Utils {
 	}
 
 	public function insertVariables($str, $context) {
-		$pattern = '/:([a-zA-Z_]+)/';	
+		$pattern = '/:([a-zA-Z_]+)/m';	
 		$result = preg_replace_callback($pattern, function ($matches) use($context) {
 			if (!array_key_exists($matches[1], $context)) {
 				return '';

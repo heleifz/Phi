@@ -1,8 +1,8 @@
 <?php
 
-namespace Phi;
+namespace Phi\YAMLReader;
 
-class YAMLReader implements Reader {
+class YAMLReader implements \Phi\Reader {
 
 	private $path = NULL;
 	private $text = NULL;

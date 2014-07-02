@@ -1,12 +1,12 @@
 <?php
 
-namespace Phi;
+namespace Phi\TwigGenerator;
 
-class TwigGenerator implements Generator {
+class TwigGenerator implements \Phi\Generator {
 
 	private $fileSystem;
 
-	public function __construct(FileSystem $fileSystem) {
+	public function __construct(\Phi\FileSystem $fileSystem) {
 		$this->fileSystem = $fileSystem;
 	}
 

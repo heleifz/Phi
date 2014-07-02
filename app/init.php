@@ -5,11 +5,6 @@ require __DIR__ .'/../vendor/autoload.php';
 $app = new Phi\Application;
 
 /**
- * Initialize Facade
- */
-\Phi\Facades\Facade::setFacadeApplication($app);
-
-/**
  * Set custom error handler
  */
 // $app->instance('Phi\\ErrorHandler', $app->make('Phi\\ErrorHandler'));
@@ -17,12 +12,12 @@ $app = new Phi\Application;
 /**
  * Set metadata reader
  */
-$app->bind('Phi\\Reader', 'Phi\\YAMLReader');
+$app->bind('Phi\\Reader', 'Phi\\YAMLReader\\YAMLReader');
 
 /**
  * Register generators
  */
-$app->registerGenerator('Phi\\TwigGenerator');
+$app->registerGenerator('Phi\\TwigGenerator\\TwigGenerator');
 
 /**
  * Register parsers
@@ -35,5 +30,6 @@ $app->registerParser('\\Phi\\HTMLParser\\HTMLParser');
  */
 $app->registerService('\\Phi\\ScaffoldService\\ScaffoldService');
 $app->registerService('\\Phi\\GenerateService\\GenerateService');
+$app->registerService('\\Phi\\CreatePluginService\\CreatePluginService');
 
 return $app;

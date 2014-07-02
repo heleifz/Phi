@@ -226,6 +226,9 @@ class Command {
 		$keys = array_keys($this->options);
 		natsort($keys);
 		foreach ($keys as $key) {
+			if ($key == 'help') {
+				continue;
+			}
 			$option = $this->getOption($key);
 			if (in_array($option, $seen)) {
 				continue;
@@ -233,6 +236,8 @@ class Command {
 			$help .= $option->getHelp();
 			$seen[] = $option;
 		}
+		$option = $this->getOption('help');
+		$help .= $option->getHelp();
 		return $help;
 	}
 

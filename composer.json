@@ -2,12 +2,10 @@
     "name": "helei/phi",
     "description": "Yet another static site generator.",
     "license": "MIT",
-    "authors": [
-        {
-            "name": "helei",
-            "email": "heleifz@126.com"
-        }
-    ],
+    "authors": [{
+        "name": "helei",
+        "email": "heleifz@126.com"
+    }],
     "minimum-stability": "dev",
     "require": {
         "erusev/parsedown-extra": "dev-master",
@@ -16,9 +14,11 @@
         "illuminate/container": "4.2.*@dev",
         "symfony/finder": "2.3.*@dev"
     },
-    "autoload" : {
+    "autoload": {
         "psr-0": {
-            "Phi": ["app/core", "app/services", "app/parsers"]
+            "Phi": [
+                "app/core", "app/services", "app/parsers", "app/generators", "app/readers"
+            ]
         }
     }
 }

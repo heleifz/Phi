@@ -1,0 +1,15 @@
+<?php
+
+class :classname implements \Phi\Parser {
+
+	public function getExtensions() {
+		// array of document type
+		return array();
+	}
+	
+	public function parse($text) {
+		// do the text transformation
+		return $text;
+	}
+	
+}

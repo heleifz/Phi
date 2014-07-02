@@ -11,7 +11,6 @@ timezone: America/New_York
 exclude_name :
 exclude_path : 
 defaults:
-	# match againt what ?
 	- pattern : *
 	  meta : 
 	  	# :structure, :title, :year, :short_year, :month, :short_month, :day, :short_day 
