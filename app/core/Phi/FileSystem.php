@@ -7,6 +7,12 @@ namespace Phi;
  */
 class FileSystem {
 
+	private $finder;
+
+	public function __construct(\Symfony\Component\Finder\Finder $finder) {
+		$this->finder = $finder;
+	}
+
 	public function exists($path) {
 		return file_exists($path);
 	}
@@ -35,6 +41,10 @@ class FileSystem {
 		return is_file($path);
 	}
 
+	public function fileName($path) {
+		return pathinfo($path, PATHINFO_FILENAME);	
+	}
+
 	public function directoryName($path) {
 		return dirname($path);
 	}
@@ -48,6 +58,30 @@ class FileSystem {
 			return false;
 		}
 		return @file_put_contents($path, $content);
+	}
+
+	public function walk($path, $ignoreVCS = true, $ext = array('*'), 
+		                 $exclude_path = array(), $exclude_name = array()) {
+		foreach ($ext as $extension) {
+			$this->finder->name('*.'.$extension);
+		}
+		foreach ($exclude_path as $p) {
+			$this->finder->notPath($p);
+		}
+		foreach ($exclude_name as $n) {
+			$this->finder->notName($n);
+		}
+		$this->finder->files()
+		      		 ->ignoreVCS($ignoreVCS)
+		       		 ->in($path);
+		$result = array_map(function ($file) {
+			return array(
+				'relative' => $file->getRelativePathname(),
+				'filename' => $file->getFileName(),
+				'relativeDir' => $file->getRelativePath()
+			);
+		}, iterator_to_array($this->finder));
+		return $result;
 	}
 
 	public function writeRecursively($path, $content, $overwrite = true, $mode = 0775) {

@@ -2,7 +2,7 @@
 
 namespace Phi;
 
-class YAMLMetadataReader implements Reader {
+class YAMLReader implements Reader {
 
 	private $path = NULL;
 	private $text = NULL;
@@ -19,22 +19,12 @@ class YAMLMetadataReader implements Reader {
 		$this->path = $path;
 		$this->text = $this->fileSystem->read($path);
 		$this->seperateParts($this->text);
-		// compute url if not given
-		if (!array_key_exists('url', $this->metadata)) {
-			$parts = explode('articles', $path);
-			if (count($parts) < 2) {
-				throw new \Exception("Could not determine URL of article : $path.");	
-			}
-			$url =  preg_replace('/\\.[^.\\s]+$/', '',
-								 trim($parts[count($parts) - 1], '/\\'));
-			$this->metadata['url'] = $url;
-		}
-		$this->metadata['url'] .= '.html';
-		// compute title 	
-		if (!array_key_exists('title', $this->metadata)) {
-			$title = pathinfo($path, PATHINFO_FILENAME);
-			$this->metadata['title'] = $title;
-		}
+		$fields = $this->parseFilename($this->path);
+		$this->metadata["year"] = $fields[0];
+		$this->metadata["month"] = $fields[1];
+		$this->metadata["day"] = $fields[2];
+		$this->metadata["name"] = $fields[3];
+		$this->metadata["date"] = $fields[0].'/'.$fields[1].'/'.$fields[2];
 	}
 
 	public function getMetadata() {
@@ -43,6 +33,15 @@ class YAMLMetadataReader implements Reader {
 
 	public function getBody() {
 		return $this->body;
+	}
+
+	private function parseFilename($path) {
+		$filename = $this->fileSystem->fileName($path);
+		$fields = explode('-', $filename, 4);
+		if (count($fields) != 4 || !checkdate($fields[1], $fields[2], $fields[0])) {
+			throw new \Exception("Error parsing filename : $filename.");
+		}
+		return $fields;
 	}
 
 	private function seperateParts() {

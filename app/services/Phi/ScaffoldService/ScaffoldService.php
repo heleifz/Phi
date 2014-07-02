@@ -6,10 +6,16 @@ class ScaffoldService implements \Phi\Service {
 
 	private $fileSystem;
 	private $console;
+	private $config;
 
-	public function __construct(\Phi\FileSystem $fileSystem, \Phi\Console $console) {
+	public function __construct(\Phi\FileSystem $fileSystem,
+								\Phi\Console $console,
+								\Phi\Config $config) {
 		$this->fileSystem = $fileSystem;
 		$this->console = $console;
+		$this->config = $config;
+		// load default configuration
+		$this->config->setPath(__DIR__.'/../../../default.yaml');
 	}
 
 	public function getName() {
@@ -57,7 +63,7 @@ class ScaffoldService implements \Phi\Service {
 	}
 
 	private function createRemainingDirectories($path) {
-		$folders = array('site', 'assets', 'templates', 'articles');
+		$folders = $this->config->get(array('source', 'destination', 'assets', 'templates'));
 		foreach ($folders as $folder) {
 			$this->fileSystem->makeDirectory($path.'/'.$folder, 775, true);
 		}
