@@ -51,6 +51,7 @@ class GenerateService implements \Phi\Service {
 			// inject metadata computed at this level
 			$current['dir'] = $pathinfo['relativeDir'];
 			foreach ($defaults as $default) {
+				// BUG!! no fall through
 				if (fnmatch($default['pattern'], $pathinfo['relative'])) {
 					$current = $this->util->arrayMergeRecursiveDistinct($default['meta'], $current);
 					break;
