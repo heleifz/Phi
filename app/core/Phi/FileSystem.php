@@ -35,15 +35,30 @@ class FileSystem {
 		return is_file($path);
 	}
 
+	public function directoryName($path) {
+		return dirname($path);
+	}
+
 	public function getExtension($path) {
 		return pathinfo($path, PATHINFO_EXTENSION);
 	}
 
-	public function write($path, $content) {
+	public function write($path, $content, $overwrite = true) {
+		if (!$overwrite && $this->isFile($path)) {
+			return false;
+		}
 		return @file_put_contents($path, $content);
 	}
 
-	public function makeDirectory($path, $mode = 755, $recursive = false)
+	public function writeRecursively($path, $content, $overwrite = true, $mode = 0775) {
+		$dirName = $this->directoryName($path);
+		if(!$this->isFile($dirName)) {
+    		$this->makeDirectory($dirName, $mode, true);
+    	}
+    	return $this->write($path, $content, $overwrite);
+	}
+
+	public function makeDirectory($path, $mode = 0755, $recursive = false)
 	{
 		return @mkdir($path, $mode, $recursive);
 	}

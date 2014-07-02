@@ -6,14 +6,14 @@ class GenerateService implements \Phi\Service {
 
 	private $finder;
 	private $console;
+	private $parsers;
 	private $renderer;
-	private $dispatcher;
 	private $fileSystem;
 
 	private $path = NULL;
 
 	public function __construct(\Symfony\Component\Finder\Finder $finder,
-								\Phi\ParserDispatcher $dispatcher,
+								\Phi\ParserDispatcher $parsers,
 								\Phi\FileSystem $fileSystem,
 								\Phi\Console $console,
 								\Phi\Config $config,
@@ -22,8 +22,8 @@ class GenerateService implements \Phi\Service {
 		$this->finder = $finder;
 		$this->config = $config;
 		$this->console = $console;
+		$this->parsers = $parsers;
 		$this->renderer = $renderer;
-		$this->dispatcher = $dispatcher;
 		$this->fileSystem = $fileSystem;
 	}
 
@@ -42,12 +42,12 @@ class GenerateService implements \Phi\Service {
 		$this->console->write("Generating pages...");
 		foreach ($this->articleIterator() as $article) {
 			$relative = strtr($article->getRelativePathname(), '\\', '/');
-			$result = $this->dispatcher->dispatch($this->path . '/articles/' . $relative);
-			if (!array_key_exists('url', $result)) {
-				throw new \Exception("Could not determine the URL of article \"$relative\".");
-			}
+			$result = $this->parsers->dispatch($this->path . '/articles/' . $relative);
 			$page = $this->renderer->render($result, $this->config->get('templates.article'));
-			echo $page;
+			$destination = $this->path . '/site/' . $result['url'];
+			if (!$this->fileSystem->writeRecursively($destination, $page)) {
+				throw new \Exception("Could not generate page : " . $destination . '.');
+			}
 		}
 		$this->console->writeLine("done.");
 	}
@@ -62,7 +62,7 @@ class GenerateService implements \Phi\Service {
 	}
 
 	private function articleIterator() {
-		foreach ($this->dispatcher->getExtensions() as $extension) {
+		foreach ($this->parsers->getExtensions() as $extension) {
 			$this->finder->name('*.'.$extension);
 		}
 		$this->finder->files()
@@ -79,6 +79,11 @@ class GenerateService implements \Phi\Service {
 		// initialize template engine
 		$this->console->write("Initializing renderer...");
 		$this->renderer->setTemplatePath($this->path . '/templates');
+		$this->console->writeLine("done.");
+
+		// clean up destination	
+		$this->console->write("Cleaning up old site...");
+		$this->fileSystem->clearDirectory($this->path . '/site');
 		$this->console->writeLine("done.");
 
 		// copy assets to destination	

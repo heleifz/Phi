@@ -14,6 +14,7 @@ class Config {
 		if ($path != $this->path) {
 			$this->path = $path;
 			$this->config = \spyc_load_file($path);
+			var_dump($this->config);
 		}
 	}
 

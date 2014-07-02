@@ -20,6 +20,21 @@ class YAMLMetadataReader implements Reader {
 		$this->text = $this->fileSystem->read($path);
 		$this->seperateParts($this->text);
 		// compute url if not given
+		if (!array_key_exists('url', $this->metadata)) {
+			$parts = explode('articles', $path);
+			if (count($parts) < 2) {
+				throw new \Exception("Could not determine URL of article : $path.");	
+			}
+			$url =  preg_replace('/\\.[^.\\s]+$/', '',
+								 trim($parts[count($parts) - 1], '/\\'));
+			$this->metadata['url'] = $url;
+		}
+		$this->metadata['url'] .= '.html';
+		// compute title 	
+		if (!array_key_exists('title', $this->metadata)) {
+			$title = pathinfo($path, PATHINFO_FILENAME);
+			$this->metadata['title'] = $title;
+		}
 	}
 
 	public function getMetadata() {

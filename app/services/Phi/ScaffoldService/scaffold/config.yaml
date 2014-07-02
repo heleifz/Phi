@@ -1,7 +1,18 @@
-sitename : Hello world
-author : heleifz
-templates : 
-	article : article.html
-	list    : list.html
-context : 
-	foo : bar
+# site.name 
+name : Phi
+source : articles
+destination : site
+templates : templates
+exclude_name :
+	- .gitignore
+	- *.php
+exclude_path : 
+	- test
+defaults:
+	- pattern : .*
+	  config : 
+	  	# :structure, :title, :year, :short_year, :month, :short_month, :day, :short_day 
+	  	# :date (filename must in year-mon-day-title format)
+	  	# a better configuration class
+	  	url :
+	  	template : article.html
