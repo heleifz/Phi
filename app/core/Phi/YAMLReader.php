@@ -49,9 +49,16 @@ class YAMLReader implements Reader {
 		$matches = array();
 		$result = preg_match($regex, $this->text, $matches);
 		if (!$result || count($matches) != 3) {
-			throw new \Exception("Could not parse the metadata of ".$this->path.'.');
+			// if article contains no metadata, use default configuration
+			if (!preg_match('/^\s*---/', $this->text)) {
+				$this->metadata = array();
+				$this->body = $this->text;
+			} else {
+				throw new \Exception("Could not parse the metadata of ".$this->path.'.');
+			}
+		} else {
+			$this->metadata = \spyc_load($matches[1]);
+			$this->body = $matches[2];
 		}
-		$this->metadata = \spyc_load($matches[1]);
-		$this->body = $matches[2];
 	}
 }
