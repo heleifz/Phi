@@ -5,6 +5,8 @@ source : articles
 destination : site
 assets : assets
 templates : templates
+generator : twig
+plugins : plugins
 timezone: America/New_York
 exclude_name :
 exclude_path : 

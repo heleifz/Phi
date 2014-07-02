@@ -4,6 +4,7 @@ namespace Phi\GenerateService;
 
 class GenerateService implements \Phi\Service {
 
+	private $app;
 	private $util;	
 	private $console;
 	private $parsers;
@@ -13,17 +14,19 @@ class GenerateService implements \Phi\Service {
 	private $path;
 	private $baseContext;
 
-	public function __construct(\Phi\ParserDispatcher $parsers,
+	public function __construct(\Phi\Application $app,
+								\Phi\ParserDispatcher $parsers,
+								\Phi\GeneratorDispatcher $generator,
 								\Phi\FileSystem $fileSystem,
 								\Phi\Console $console,
 								\Phi\Config $config,
-								\Phi\Utils $util,
-								\Phi\Renderer $renderer) {
+								\Phi\Utils $util) {
+		$this->app = $app;
 		$this->util = $util;
 		$this->config = $config;
 		$this->console = $console;
 		$this->parsers = $parsers;
-		$this->renderer = $renderer;
+		$this->generator = $generator;
 		$this->fileSystem = $fileSystem;
 	}
 
@@ -36,14 +39,11 @@ class GenerateService implements \Phi\Service {
 	}
 
 	public function execute($arguments, $flags) {
-
 		// copy files, load configurations, set up context
 		$this->initialize($arguments[0]);
-
 		// get article path
 		$sources = $this->getArticlePath();		
-
-		// generate (partial) metadata for each article
+		// generate meta data for the site
 		$results = array();
 		$defaults = $this->config->get('defaults');
 		foreach ($sources as $absolute => $pathinfo) {
@@ -51,29 +51,27 @@ class GenerateService implements \Phi\Service {
 			// inject metadata computed at this level
 			$current['dir'] = $pathinfo['relativeDir'];
 			foreach ($defaults as $default) {
-				// BUG!! no fall through
+				if (!array_key_exists('pattern', $default) ||
+					!array_key_exists('meta', $default)) {
+					throw new \Exception("Fail parsing configuration file : ".
+						"cannot find 'pattern' or 'meta' field in defaults item.");
+				}
 				if (fnmatch($default['pattern'], $pathinfo['relative'])) {
 					$current = $this->util->arrayMergeRecursiveDistinct($default['meta'], $current);
-					break;
 				}
 			}
 			$current = $this->resolveVariables($current);	
 			$current['url'] = $this->util->normalizeUrl($current['url']);
 			$results[] = $current;
 		}
-
-		// render html file (fill in the rest metadata)
-		$total = count($results);
 		$this->baseContext['site']['articles'] = $results;
-		for ($i = 0; $i < $total; $i++) {
-			$current = $results[$i];
-			$current['previous_article'] = $i > 0 ? $results[$i - 1] : NULL;
-			$current['next_article'] = $i < ($total - 1) ? $results[$i + 1] : NULL;
-			$this->baseContext['page'] = $current; 
-			$page = $this->renderer->render($this->baseContext, $current['template']);
-			$this->fileSystem->writeRecursively($this->path.'/'.
-				$this->config->get('destination').'/'.$current['url'], $page); 
+		// generate site
+		$generatorName = $this->config->get('generator');
+		$generator = $this->generator->dispatch($generatorName);
+		if (!$generator) {
+			throw new \Exception("Could not find generator : $generatorName.");
 		}
+		$generator->generate($this->baseContext);
 	}
 
 	public function getCommandOptions() {
@@ -104,6 +102,21 @@ class GenerateService implements \Phi\Service {
 		return $metadata;
 	}
 
+	private function registerPlugins($path) {
+		$files = $this->fileSystem->walk($path, true, array('php'));
+		foreach ($files as $file => $pathinfo) {
+			$this->fileSystem->includeOnce($file);
+			$className = $this->fileSystem->fileName($file);
+			if (preg_match('/.*(?:p|P)arser$/', $className)) {
+				$this->app->registerParser($className);
+			} elseif (preg_match('/.*(?:g|G)enerator$/', $className)) {
+				$this->app->registerGenerator($className);
+			} else {
+				$this->console->writeLine("Unknown plugin : $className.")
+			}
+		}
+	}
+
 	private function initialize($path) {
 
 		$this->path = $path;
@@ -117,11 +130,6 @@ class GenerateService implements \Phi\Service {
 		// set timezone
 		date_default_timezone_set($this->config->get('timezone'));
 
-		// initialize template engine
-		$this->console->write("Initializing renderer...");
-		$this->renderer->setTemplatePath($path.'/'.$this->config->get('templates'));
-		$this->console->writeLine("done.");
-
 		// clean up destination	
 		$this->console->write("Cleaning up old site...");
 		$this->fileSystem->clearDirectory($path.'/'.$this->config->get('destination'));
@@ -133,10 +141,15 @@ class GenerateService implements \Phi\Service {
 										 $path.'/'.$this->config->get('destination'));
 		$this->console->writeLine("done.");
 
+		$this->console->write("Loading plugins...");
+		$this->registerPlugins($path.'/'.$this->config->get('plugins'));
+		$this->console->writeLine("done.");
+
 		// initialize global context
 		$this->baseContext = array(
 			'site' => array(
 				'name' => $this->config->get('name'),
+				'project' => $this->path,
 				'time' => date("Y-m-d H:i:s"),
 				'config' => $this->config->toArray()
 			)

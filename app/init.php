@@ -7,7 +7,7 @@ $app = new Phi\Application;
 /**
  * Set custom error handler
  */
-$app->instance('Phi\\ErrorHandler', $app->make('Phi\\ErrorHandler'));
+// $app->instance('Phi\\ErrorHandler', $app->make('Phi\\ErrorHandler'));
 
 /**
  * Set metadata reader
@@ -15,9 +15,9 @@ $app->instance('Phi\\ErrorHandler', $app->make('Phi\\ErrorHandler'));
 $app->bind('Phi\\Reader', 'Phi\\YAMLReader');
 
 /**
- * Set template engine
+ * Register generators
  */
-$app->bind('Phi\\Renderer', 'Phi\\TwigRenderer');
+$app->registerGenerator('Phi\\TwigGenerator');
 
 /**
  * Register parsers

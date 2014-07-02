@@ -1,5 +1,0 @@
----
----
-# another File
-
-this is another markdown file with extension '.mdown'

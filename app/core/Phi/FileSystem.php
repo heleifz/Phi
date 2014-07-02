@@ -17,6 +17,10 @@ class FileSystem {
 		return file_exists($path);
 	}
 
+	public function includeOnce($path) {
+		include_once $path;	
+	}
+
 	public function read($path) {
 		return file_get_contents($path);	
 	}
@@ -62,6 +66,7 @@ class FileSystem {
 
 	public function walk($path, $ignoreVCS = true, $ext = array('*'), 
 		                 $exclude_path = array(), $exclude_name = array()) {
+		$this->finder = $this->finder->create();
 		foreach ($ext as $extension) {
 			$this->finder->name('*.'.$extension);
 		}
@@ -99,12 +104,14 @@ class FileSystem {
 
 	public function isValidPath($path) {
 		$path = trim($path);
-		if (preg_match('/^[^*?"<>|:]*$/', $path)) {return true;
+		if (preg_match('/^[^*?"<>|:]*$/', $path)) {
+			return true;
 		}
 
 		if (!defined('WINDOWS_SERVER')) {
 			$tmp = dirname(__FILE__);
-			if (strpos($tmp, '/', 0) !== false) {define('WINDOWS_SERVER', false);
+			if (strpos($tmp, '/', 0) !== false) {
+				define('WINDOWS_SERVER', false);
 			} else {
 				define('WINDOWS_SERVER', true);
 			}
@@ -141,7 +148,7 @@ class FileSystem {
 		foreach ($files as $file) {
 			(is_dir("$dir/$file"))?self::deleteDirectory("$dir/$file"):unlink("$dir/$file");
 		}
-		return rmdir($dir);
+		return @rmdir($dir);
 	}
 
 	public function clearDirectory($dir) {

@@ -1,5 +1,0 @@
----
----
-# world
-
-Lorem ipsum dolor sit amet, consectetur adipisicing elit. Magni, nam, ducimus earum accusamus reiciendis, cumque voluptatibus odio ut aliquam sapiente dolor aperiam rerum modi voluptates corporis unde et, delectus necessitatibus laborum commodi. Quam dolorem culpa nesciunt nisi et voluptates hic, maiores enim consequuntur aspernatur. Beatae, sapiente architecto. Reprehenderit, provident, cum!
