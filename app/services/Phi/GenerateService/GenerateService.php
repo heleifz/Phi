@@ -112,7 +112,7 @@ class GenerateService implements \Phi\Service {
 			} elseif (preg_match('/.*(?:g|G)enerator$/', $className)) {
 				$this->app->registerGenerator($className);
 			} else {
-				$this->console->writeLine("Unknown plugin : $className.")
+				$this->console->writeLine("Unknown plugin : $className.");
 			}
 		}
 	}

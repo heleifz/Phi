@@ -22,6 +22,9 @@ class ParserDispatcher {
 
 	public function dispatch($filepath) {
 		$ext = $this->fileSystem->getExtension($filepath);
+		if (!array_key_exists($ext, $this->parserMap)) {
+			new \Exception("Could not parse $ext file : $filepath.");
+		}
 		$parser = $this->parserMap[$ext];
 		$this->reader->setPath($filepath);
 		$body = $parser->parse($this->reader->getBody());

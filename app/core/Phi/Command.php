@@ -118,7 +118,6 @@ class Command {
 				}
 			}
 		}
-
 		foreach ($this->options as $k => $v) {
 			if (is_numeric($k)) {
 				$idx = $k;
@@ -135,7 +134,6 @@ class Command {
 				}
 			}	
 		}
-
 		foreach ($keyvals as $k => $v) {
 			$option    = $this->options[$k];
 			$validator = $option->getValidator();
@@ -144,7 +142,6 @@ class Command {
 						$option->isPositional()?'argument':'flag', $validator[1]));
 			}
 		}
-
 		// fill in the parsing results
 		foreach ($keyvals as $k => $v) {
 			if (is_numeric($k)) {

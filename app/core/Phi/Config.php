@@ -30,11 +30,7 @@ class Config {
 	public function toArray() {
 		return $this->config;
 	}
-
-	public function merge($items) {
-
-	}
-
+	
 	public function get($query)
 	{
 		if (is_string($query)) {

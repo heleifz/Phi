@@ -5,6 +5,11 @@ require __DIR__ .'/../vendor/autoload.php';
 $app = new Phi\Application;
 
 /**
+ * Initialize Facade
+ */
+\Phi\Facades\Facade::setFacadeApplication($app);
+
+/**
  * Set custom error handler
  */
 // $app->instance('Phi\\ErrorHandler', $app->make('Phi\\ErrorHandler'));
