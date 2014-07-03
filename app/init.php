@@ -7,7 +7,7 @@ $app = new Phi\Application;
 /**
  * Set custom error handler
  */
-$app->instance('Phi\\ErrorHandler', $app->make('Phi\\ErrorHandler'));
+// $app->instance('Phi\\ErrorHandler', $app->make('Phi\\ErrorHandler'));
 
 /**
  * Set metadata reader

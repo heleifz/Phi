@@ -13,7 +13,12 @@
 			<h3>Recent Articles</h3>
 			<ul class="square">
 				{% for article in site.articles|sort_by_date_desc %}
-					<a href="{{ article.url }}"><li><strong>{{ article.title }}</strong>&nbsp;&nbsp;{{ article.content|excerpt|truncate(50) }}</li></a>
+					<a href="{{ article.url }}">
+						<li>
+							<strong>{{ article.title }}</strong>&nbsp;&nbsp;
+							{{ article.content|excerpt|truncate(50) }}
+						</li>
+					</a>
 				{% endfor %}
 			</ul>
 		</div>

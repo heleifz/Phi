@@ -5,6 +5,7 @@ source : articles
 destination : site
 assets : assets
 templates : templates
+root : 
 generator : twig
 encoding : utf-8
 plugins : plugins

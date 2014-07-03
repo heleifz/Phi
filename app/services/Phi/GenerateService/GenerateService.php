@@ -66,7 +66,8 @@ class GenerateService implements \Phi\Service {
 			$url = $this->util->normalizeUrl($current['url']);
 			// id is original article relative path (without extension)
 			$current['id'] = $id;
-			$current['url'] = $url;
+			$current['relativeUrl'] = $url;
+			$current['url'] = $this->config->get('root').$url;
 			$urlMap[$id] = $url;
 			$results[] = $current;
 		}
@@ -162,6 +163,7 @@ class GenerateService implements \Phi\Service {
 			'site' => array(
 				'name' => $this->config->get('name'),
 				'encoding' => $this->config->get('encoding'),
+				'root' => $this->config->get('root'),
 				'project' => $this->path,
 				'time' => date("Y-m-d H:i:s"),
 				'config' => $this->config->toArray()
