@@ -1,0 +1,9 @@
+{% extends "layout.html" %}
+
+{% block content %}
+	<ul>
+	{% for article in site.articles %}
+		<li><a href="{{ article.url }}">{{ article.title }}</a></li>
+	{% endfor %}
+	</ul>
+{% endblock %}

@@ -1,7 +1,5 @@
 <?php
 
-namespace Phi\TwigGenerator;
-
 class :classname implements \Phi\Generator {
 
 	public function getName() {

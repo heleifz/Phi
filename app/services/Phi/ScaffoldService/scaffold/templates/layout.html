@@ -2,10 +2,33 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>{{ title }}</title>
+	<title>{{ page.title }}</title>
+	<!-- CSS -->	
+	<link href="/css/bootstrap.flatly.min.css" rel="stylesheet" media="screen">
+	<link href="/css/highlight/default.css" rel="stylesheet" media="screen">
+	<link href="/css/phi.css" rel="stylesheet" media="screen">
+	<!-- Javascript -->	
+	<script src="/js/jquery-1.11.1.min.js"></script>
+	<script src="/js/bootstrap.min.js"></script>
+	<script src="/js/highlight.pack.js"></script>
+	<script src="/js/phi.js"></script>
 </head>
 <body>
-{% block content %}
-{% endblock %}	
+	<div class="container">
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" id="navigation" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="/"><img height="20px" src="/img/phi.png"></a>
+        </div>
+		<ul class="nav navbar-nav">
+			<li><a href="/">Welcome</a></li>
+			<li><a href="/example/list.html">Article List</a></li>
+		</ul>
+      </div>
+    </div>
+	{% block content %}
+	{% endblock %}
+	</div>
 </body>
 </html>
