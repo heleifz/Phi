@@ -21,6 +21,8 @@ class PhiExtension extends \Twig_Extension {
 		return array(
 			new \Twig_SimpleFilter('excerpt', array($this, 'excerptFilter')),
 			new \Twig_SimpleFilter('truncate', array($this, 'truncateFilter')),
+			new \Twig_SimpleFilter('where_*', array($this, 'whereFilter')),
+			new \Twig_SimpleFilter('group_by_*', array($this, 'groupByFilter')),
 			new \Twig_SimpleFilter('sort_by_*_*', array($this, 'stableSortFilter')),
 		);
 	}
@@ -63,6 +65,60 @@ class PhiExtension extends \Twig_Extension {
 			}
 			return mb_substr($text, 0, $maxChar, $charset);
 		}
+	}
+
+	public function groupByFilter($field, $arr) {
+		$result = array();
+		foreach ($arr as $ele) {
+			$result[$ele[$field]][] = $ele;
+		}
+		return $result;
+	}
+
+	public function whereFilter($field, $arr, $comp, $val) {
+		$result = array();
+		// $comp = < <= >= >
+		switch ($comp) {
+			case '=':
+				foreach ($arr as $ele) {
+					if ($ele[$field] == $val) {
+						$result[] = $ele;
+					}
+				}
+				break;
+			case '<':
+				foreach ($arr as $ele) {
+					if ($ele[$field] < $val) {
+						$result[] = $ele;
+					}
+				}
+				break;
+			case '<=':
+				foreach ($arr as $ele) {
+					if ($ele[$field] <= $val) {
+						$result[] = $ele;
+					}
+				}
+				break;
+			case '>':
+				foreach ($arr as $ele) {
+					if ($ele[$field] > $val) {
+						$result[] = $ele;
+					}
+				}
+				break;
+			case '>=':
+				foreach ($arr as $ele) {
+					if ($ele[$field] >= $val) {
+						$result[] = $ele;
+					}
+				}
+				break;
+			default:
+				throw new \Twig_Error_Syntax("Illegal comparition operator : '$comp'");
+				break;
+		}
+		return $result;
 	}
 
 	public function stableSortFilter($field, $method, $arr) {

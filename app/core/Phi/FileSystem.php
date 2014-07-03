@@ -94,10 +94,11 @@ class FileSystem {
 
 	public function writeRecursively($path, $content, $overwrite = true, $mode = 0775) {
 		$dirName = $this->directoryName($path);
+		$result = true;
 		if(!$this->isFile($dirName)) {
-    		$this->makeDirectory($dirName, $mode, true);
+    		$result = $this->makeDirectory($dirName, $mode, true) && $result;
     	}
-    	return $this->write($path, $content, $overwrite);
+    	return $this->write($path, $content, $overwrite) && $result;
 	}
 
 	public function makeDirectory($path, $mode = 0755, $recursive = false)
@@ -133,32 +134,51 @@ class FileSystem {
 
 	public function copyDirectory($src, $dst) {
 		$dir = opendir($src);
-		@mkdir($dst);
+		$result = @mkdir($dst);
 		while (false !== ($file = readdir($dir))) {
 			if (($file != '.') && ($file != '..')) {
 				if (is_dir($src.'/'.$file)) {
 					self::copyDirectory($src.'/'.$file, $dst.'/'.$file);
 				} else {
-					copy($src.'/'.$file, $dst.'/'.$file);
+					$result = @copy($src.'/'.$file, $dst.'/'.$file) && $result;
 				}
 			}
 		}
 		closedir($dir);
+		return $result;
 	}
 
 	public function deleteDirectory($dir) {
-		$files = array_diff(scandir($dir), array('.', '..'));
-		foreach ($files as $file) {
-			(is_dir("$dir/$file"))?self::deleteDirectory("$dir/$file"):unlink("$dir/$file");
+		$dirs = @scandir($dir);
+		if ($dirs === false) {
+			return false;
 		}
-		return @rmdir($dir);
+		$files = array_diff($dirs, array('.', '..'));
+		$result = true;
+		foreach ($files as $file) {
+			if (is_dir("$dir/$file")) {
+				self::deleteDirectory("$dir/$file");
+			} else {
+				$result = @unlink("$dir/$file") && $result;
+			}
+		}
+		return @rmdir($dir) && $result;;
 	}
 
 	public function clearDirectory($dir) {
-		$files = array_diff(scandir($dir), array('.', '..'));
-		foreach ($files as $file) {
-			(is_dir("$dir/$file"))?self::deleteDirectory("$dir/$file"):unlink("$dir/$file");
+		$dirs = @scandir($dir);
+		if ($dirs === false) {
+			return false;
 		}
-		return;
+		$files = array_diff($dirs, array('.', '..'));
+		$result = true;
+		foreach ($files as $file) {
+			if (is_dir("$dir/$file")) {
+				self::deleteDirectory("$dir/$file");
+			} else {
+				$result = @unlink("$dir/$file") && $result;
+			}
+		}
+		return $result;
 	}
 }

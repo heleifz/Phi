@@ -44,7 +44,7 @@ class Utils {
 		$pattern = '/:([a-zA-Z_]+)/m';	
 		$result = preg_replace_callback($pattern, function ($matches) use($context) {
 			if (!array_key_exists($matches[1], $context)) {
-				return '';
+				return $matches[0];
 			}
 			return $context[$matches[1]];
 		}, $str);

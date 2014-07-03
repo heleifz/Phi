@@ -6,6 +6,7 @@ destination : site
 assets : assets
 templates : templates
 generator : twig
+encoding : utf-8
 plugins : plugins
 timezone: America/New_York
 exclude_name :

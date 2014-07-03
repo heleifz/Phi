@@ -64,6 +64,7 @@ class GenerateService implements \Phi\Service {
 			$current = $this->resolveVariables($current);	
 			$id = trim($current['dir'].'/'.$this->fileSystem->fileName($absolute), '/\\');
 			$url = $this->util->normalizeUrl($current['url']);
+			// id is original article relative path (without extension)
 			$current['id'] = $id;
 			$current['url'] = $url;
 			$urlMap[$id] = $url;
@@ -160,6 +161,7 @@ class GenerateService implements \Phi\Service {
 		$this->baseContext = array(
 			'site' => array(
 				'name' => $this->config->get('name'),
+				'encoding' => $this->config->get('encoding'),
 				'project' => $this->path,
 				'time' => date("Y-m-d H:i:s"),
 				'config' => $this->config->toArray()

@@ -19,12 +19,7 @@ class YAMLReader implements \Phi\Reader {
 		$this->path = $path;
 		$this->text = $this->fileSystem->read($path);
 		$this->seperateParts($this->text);
-		$fields = $this->parseFilename($this->path);
-		$this->metadata["year"] = $fields[0];
-		$this->metadata["month"] = $fields[1];
-		$this->metadata["day"] = $fields[2];
-		$this->metadata["name"] = $fields[3];
-		$this->metadata["date"] = $fields[0].'/'.$fields[1].'/'.$fields[2];
+		$this->parseFilename($this->path);
 	}
 
 	public function getMetadata() {
@@ -41,6 +36,22 @@ class YAMLReader implements \Phi\Reader {
 		if (count($fields) != 4 || !checkdate($fields[1], $fields[2], $fields[0])) {
 			throw new \Exception("Error parsing filename : $filename.");
 		}
+		$this->metadata["name"] = $fields[3];
+		// normalize date format		
+		$timestamp = strtotime($fields[0].'/'.$fields[1].'/'.$fields[2]);
+		$this->metadata["timestamp"] = $timestamp;
+		$longDate = date("Y-m-d", $timestamp);
+		$shortDate = date("y-n-j", $timestamp);
+		$longFields = explode('-', $longDate);
+		$shortFields = explode('-', $shortDate);
+		$this->metadata["year"] = $longFields[0];
+		$this->metadata["month"] = $longFields[1];
+		$this->metadata["day"] = $longFields[2];
+		$this->metadata["short_year"] = $shortFields[0];
+		$this->metadata["short_month"] = $shortFields[1];
+		$this->metadata["short_day"] = $shortFields[2];
+		$this->metadata["date"] = $longDate;
+		$this->metadata["short_date"] = $shortDate;
 		return $fields;
 	}
 

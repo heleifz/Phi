@@ -20,7 +20,10 @@ class TwigGenerator implements \Phi\Generator {
 		// initialize Twig
 		$templatePath = $projectPath.'/'.$context['site']['config']['templates'];
 		$loader = new \Twig_Loader_Filesystem($templatePath);
-		$twig = new \Twig_Environment($loader, array('autoescape' => false));
+		$twig = new \Twig_Environment($loader, array(
+			'autoescape' => false,
+			'charset' => $context['site']['encoding']
+		));
 		$twig->addExtension(new PhiExtension($context));
 		// rendering every page	
 		$total = count($articles);
