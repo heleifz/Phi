@@ -2,13 +2,22 @@
 
 # A Static Site Generator
 
+(Require PHP version >= 5.4)
+
 Phi is a static site generator that has terse template syntax and high extensibility.
 
 ## Usage 
 
 ### 0. Compile .phar file
 
-After download the project file, run ```php compile.php`` to compile Phi.
+After download the project, run:
+
+```
+php composer.phar update
+php compile.php
+```
+
+to compile the Phi archive file (phi.phar).
 
 ### 1. Create scaffold for your site
 
