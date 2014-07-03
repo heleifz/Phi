@@ -21,6 +21,7 @@ class TwigGenerator implements \Phi\Generator {
 		$templatePath = $projectPath.'/'.$context['site']['config']['templates'];
 		$loader = new \Twig_Loader_Filesystem($templatePath);
 		$twig = new \Twig_Environment($loader, array('autoescape' => false));
+		$twig->addExtension(new PhiExtension($context));
 		// rendering every page	
 		$total = count($articles);
 		for ($i = 0; $i < $total; $i++) {

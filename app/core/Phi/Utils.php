@@ -20,11 +20,11 @@ class Utils {
 	}
 
 	public function startsWith($haystack, $needle) {
-	    return $needle === "" || strpos($haystack, $needle) === 0;
+		return $needle === "" || strpos($haystack, $needle) === 0;
 	}
 	
 	public function endsWith($haystack, $needle) {
-	    return $needle === "" || substr($haystack, -strlen($needle)) === $needle;
+		return $needle === "" || substr($haystack, -strlen($needle)) === $needle;
 	}
 
 	public function normalizeUrl($url) {

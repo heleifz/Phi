@@ -65,7 +65,7 @@ class FileSystem {
 	}
 
 	public function walk($path, $ignoreVCS = true, $ext = array('*'), 
-		                 $exclude_path = array(), $exclude_name = array()) {
+		                 $exclude_path = array(), $exclude_name = array(), $depth=NULL) {
 		$this->finder = $this->finder->create();
 		foreach ($ext as $extension) {
 			$this->finder->name('*.'.$extension);
@@ -75,6 +75,9 @@ class FileSystem {
 		}
 		foreach ($exclude_name as $n) {
 			$this->finder->notName($n);
+		}
+		if ($depth) {
+			$this->finder->depth($depth);
 		}
 		$this->finder->files()
 		      		 ->ignoreVCS($ignoreVCS)

@@ -46,6 +46,7 @@ class GenerateService implements \Phi\Service {
 		// generate meta data for the site
 		$results = array();
 		$defaults = $this->config->get('defaults');
+		$urlMap = array();
 		foreach ($sources as $absolute => $pathinfo) {
 			$current = $this->parsers->dispatch($absolute);
 			// inject metadata computed at this level
@@ -61,17 +62,25 @@ class GenerateService implements \Phi\Service {
 				}
 			}
 			$current = $this->resolveVariables($current);	
-			$current['url'] = $this->util->normalizeUrl($current['url']);
+			$id = trim($current['dir'].'/'.$this->fileSystem->fileName($absolute), '/\\');
+			$url = $this->util->normalizeUrl($current['url']);
+			$current['id'] = $id;
+			$current['url'] = $url;
+			$urlMap[$id] = $url;
 			$results[] = $current;
 		}
 		$this->baseContext['site']['articles'] = $results;
+		$this->baseContext['site']['url_map'] = $urlMap;
 		// generate site
 		$generatorName = $this->config->get('generator');
 		$generator = $this->generator->dispatch($generatorName);
 		if (!$generator) {
 			throw new \Exception("Could not find generator : $generatorName.");
 		}
+		$this->console->write('Generating pages...');
 		$generator->generate($this->baseContext);
+		$this->console->writeLine('done.');
+		$this->console->writeLine('Success!');
 	}
 
 	public function getCommandOptions() {
@@ -103,7 +112,9 @@ class GenerateService implements \Phi\Service {
 	}
 
 	private function registerPlugins($path) {
-		$files = $this->fileSystem->walk($path, true, array('php'));
+		// scan only first level (users can put their library in sub directory)
+		$files = $this->fileSystem->walk($path, true,
+			array('php'), array(), array(), '< 1'); 
 		foreach ($files as $file => $pathinfo) {
 			$this->fileSystem->includeOnce($file);
 			$className = $this->fileSystem->fileName($file);
