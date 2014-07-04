@@ -1,9 +1,7 @@
 <?php
 
 @unlink('./phi.phar');
-
 include "./vendor/autoload.php";
-
 use Symfony\Component\Finder\Finder;
 
 $phar = new \Phar('phi.phar', 1, 'phi.phar');

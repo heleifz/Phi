@@ -57,7 +57,7 @@ class ScaffoldService implements \Phi\Service {
 				$this->fileSystem->delete($path);
 			}
 		}
-		if (!$this->fileSystem->makeDirectory($path, 775, true)) {
+		if (!$this->fileSystem->makeDirectory($path, 0755, true)) {
 			throw new \Exception("Cannot create directory : $path.");
 		}
 	}
@@ -65,7 +65,7 @@ class ScaffoldService implements \Phi\Service {
 	private function createRemainingDirectories($path) {
 		$folders = $this->config->get(array('source', 'destination', 'assets', 'templates'));
 		foreach ($folders as $folder) {
-			$this->fileSystem->makeDirectory($path.'/'.$folder, 775, true);
+			$this->fileSystem->makeDirectory($path.'/'.$folder, 0755, true);
 		}
 	}
 }

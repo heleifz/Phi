@@ -96,7 +96,7 @@ class FileSystem {
 		return $result;
 	}
 
-	public function writeRecursively($path, $content, $overwrite = true, $mode = 0775) {
+	public function writeRecursively($path, $content, $overwrite = true, $mode = 0755) {
 		$dirName = $this->directoryName($path);
 		$result = true;
 		if(!$this->isFile($dirName)) {
