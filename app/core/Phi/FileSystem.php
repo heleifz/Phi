@@ -53,6 +53,10 @@ class FileSystem {
 		return dirname($path);
 	}
 
+	public function modificationTime($path) {
+		return filemtime($path);
+	}
+
 	public function getExtension($path) {
 		return pathinfo($path, PATHINFO_EXTENSION);
 	}

@@ -50,7 +50,7 @@ class PhiExtension extends \Twig_Extension {
 		if ($ret) {
 			return $ret->plaintext;
 		} else {
-			return $html;
+			return strip_tags($html);
 		}
 	}
 

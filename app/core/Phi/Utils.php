@@ -30,7 +30,7 @@ class Utils {
 	public function normalizeUrl($url) {
 		$url = strtr($url, '\\', '/');
 		$url = preg_replace('#/+#','/',$url);
-		if (!preg_match('/^.*\\.html?$/', $url)) {
+		if (!preg_match('/^.*\\.(html|css|js)?$/i', $url)) {
 			$url .= '/index.html';
 		}
 		// convert to absolute path

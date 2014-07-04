@@ -34,16 +34,20 @@ class YAMLReader implements \Phi\Reader {
 		$filename = $this->fileSystem->fileName($path);
 		$fields = explode('-', $filename, 4);
 		if (count($fields) != 4 || !checkdate($fields[1], $fields[2], $fields[0])) {
-			throw new \Exception("Error parsing filename : $filename.");
+			$this->metadata["name"] = $filename;
+			$timestamp = $this->fileSystem->modificationTime($path);
+		} else {
+			// if filename is not according to year-month-day-name
+			// then use the fullname as "name", and file mtime as timestamp
+			$this->metadata["name"] = $fields[3];
+			$timestamp = strtotime($fields[0].'/'.$fields[1].'/'.$fields[2]);
 		}
-		$this->metadata["name"] = $fields[3];
 		// normalize date format		
-		$timestamp = strtotime($fields[0].'/'.$fields[1].'/'.$fields[2]);
 		$this->metadata["timestamp"] = $timestamp;
-		$longDate = date("Y-m-d", $timestamp);
-		$shortDate = date("y-n-j", $timestamp);
-		$longFields = explode('-', $longDate);
-		$shortFields = explode('-', $shortDate);
+		$longDate = date("Y/m/d", $timestamp);
+		$shortDate = date("y/n/j", $timestamp);
+		$longFields = explode('/', $longDate);
+		$shortFields = explode('/', $shortDate);
 		$this->metadata["year"] = $longFields[0];
 		$this->metadata["month"] = $longFields[1];
 		$this->metadata["day"] = $longFields[2];

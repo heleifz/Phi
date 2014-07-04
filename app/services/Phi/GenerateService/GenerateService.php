@@ -46,6 +46,12 @@ class GenerateService implements \Phi\Service {
 		// generate meta data for the site
 		$results = array();
 		$defaults = $this->config->get('defaults');
+		// normalize backslashes in pattern
+		foreach ($defaults as &$d) {
+			if (array_key_exists('pattern', $d)) {
+				$d['pattern'] = strtr($d['pattern'], '\\', '/');
+			}
+		}
 		$urlMap = array();
 		foreach ($sources as $absolute => $pathinfo) {
 			$current = $this->parsers->dispatch($absolute);
@@ -55,9 +61,9 @@ class GenerateService implements \Phi\Service {
 				if (!array_key_exists('pattern', $default) ||
 					!array_key_exists('meta', $default)) {
 					throw new \Exception("Fail parsing configuration file : ".
-						"cannot find 'pattern' or 'meta' field in defaults item.");
+						"cannot find 'pattern' and 'meta' field in defaults item.");
 				}
-				if (fnmatch($default['pattern'], $pathinfo['relative'])) {
+				if (fnmatch($default['pattern'], strtr($pathinfo['relative'], '\\', '/'))) {
 					$current = $this->util->arrayMergeRecursiveDistinct($default['meta'], $current);
 				}
 			}

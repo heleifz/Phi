@@ -28,10 +28,22 @@ class TwigGenerator implements \Phi\Generator {
 		$twig->addTokenParser(new CssTokenParser($context['site']['root']));
 		$twig->addTokenParser(new FaviconTokenParser($context['site']['root']));
 
-		// !! pre render the article content (it probably contains many Twig structure)
-		foreach ($context['site']['articles'] as &$raw) {
-			$raw['content'] = $twig->render($raw['content'], $context);
+		foreach ($context['site']['articles'] as $idx => &$raw) {
+			if ($raw['template'] == '*asset*') {
+				// render asset template (coffeescript, less, etc...)
+				$context['page'] = $raw;
+				$page = $twig->render("{{ page.content }}", $context);
+				$this->fileSystem->writeRecursively($projectPath.'/'.
+				$context['site']['config']['destination'].'/'.$raw['relativeUrl'], $page); 
+				unset($context['site']['articles'][$idx]);
+			} else {
+				// !! pre render the article content
+				// (it probably contains Twig structures)
+				$raw['content'] = $twig->render($raw['content'], $context);
+			}
 		}
+		$articles = $context['site']['articles'] =
+			array_values($context['site']['articles']);
 		$loader = new \Twig_Loader_Filesystem($templatePath);
 		$twig->setLoader($loader);
 
