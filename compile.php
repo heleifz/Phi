@@ -1,9 +1,9 @@
 <?php
 
-@unlink('./phi.phar');
 include "./vendor/autoload.php";
 use Symfony\Component\Finder\Finder;
 
+@unlink('./phi.phar');
 $phar = new \Phar('phi.phar', 1, 'phi.phar');
 $phar->setSignatureAlgorithm(\Phar::SHA1);
 $phar->startBuffering();
@@ -11,19 +11,14 @@ $phar->startBuffering();
 $finder = new Finder();
 $finder->files()
        ->ignoreVCS(true)
-       ->name('*.php')
-       ->name('*.template')
-       ->name('*.json')
-       ->name('*.js')
-       ->name('*.css')
-       ->name('*.png')
-       ->name('*.jpg')
-       ->name('*.ico')
-       ->name('*.yaml')
-       ->name('*.html')
-       ->name('*.md')
-       ->notName('readme.md')
-       ->notPath('test')
+       ->name('*.php')->name('*.template')
+       ->name('*.json')->name('*.js')
+       ->name('*.css')->name('*.png')
+       ->name('*.jpg')->name('*.ico')
+       ->name('*.yaml')->name('*.html')
+       ->name('*.md')->notName('readme.md')
+       ->notPath('test')->notPath('mockery')
+       ->notPath('tests')
        ->notName('compile.php')
        ->in(".");
 

@@ -12,7 +12,8 @@
         "lespoilus/spyc": "dev-master",
         "twig/twig": "1.*",
         "illuminate/container": "4.2.*@dev",
-        "symfony/finder": "2.3.*@dev"
+        "symfony/finder": "2.3.*@dev",
+        "mockery/mockery": "dev-master"
     },
     "autoload": {
         "psr-0": {
