@@ -1,6 +1,7 @@
 <?php
 /**
- * A revise version of nategood/commando
+ * A greatly simplified version of Commando
+ * https://github.com/nategood/commando 
  */
 
 namespace Phi;
@@ -174,11 +175,6 @@ class Command {
 		return array($token, self::OPTION_TYPE_ARGUMENT);
 	}
 
-	/**
-	 * @param string $option
-	 * @return Option
-	 * @throws \Exception if $option does not exist
-	 */
 	public function getOption($option) {
 		if (!$this->hasOption($option)) {
 			throw new \Exception(sprintf('Unknown option, %s, specified', $option));

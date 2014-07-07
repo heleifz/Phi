@@ -30,7 +30,7 @@ class ServiceDispatcher {
 	}
 
 	private function getHelp() {
-		$helpString = "Type 'phi.phar command --help' for help".PHP_EOL.PHP_EOL.
+		$helpString = PHP_EOL."Type 'phi.phar command --help' for help".PHP_EOL.PHP_EOL.
 			"Available Commands:".PHP_EOL.PHP_EOL;
 		foreach ($this->serviceMap as $name => $service) {
 			$helpString .= "  $name : " .$service->getDescription().PHP_EOL;

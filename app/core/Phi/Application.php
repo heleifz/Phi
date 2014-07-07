@@ -15,6 +15,13 @@ class Application extends \Illuminate\Container\Container {
 	public function __construct() {
 		// register itself in IoC container (for plugin functionality)
 		$this->instance('Phi\\Application', $this);
+		// register global context
+		$this->singleton('Phi\\Context', function () {
+			$config = Context::fromYML(__DIR__.'/../../default.yaml');
+			$context = new Context;
+			$context->merge($config, 'config');
+			return $context;
+		});	
 		foreach ($this->coreComponents as $component) {
 			$this->singleton($component);
 		}

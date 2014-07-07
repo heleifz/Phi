@@ -4,4 +4,3 @@ before_script:
   - php compile.php
 php:
   - 5.4
-script: :

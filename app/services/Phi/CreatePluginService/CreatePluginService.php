@@ -4,7 +4,6 @@ namespace Phi\CreatePluginService;
 
 class CreatePluginService implements \Phi\Service {
 
-	private $util;
 	private $fileSystem;
 	private $path;
 
@@ -18,8 +17,7 @@ class CreatePluginService implements \Phi\Service {
 		'generator' => 'Generator'
 	);
 
-	public function __construct(\Phi\Utils $util, \Phi\FileSystem $fileSystem) {
-		$this->util = $util;
+	public function __construct(\Phi\FileSystem $fileSystem) {
 		$this->fileSystem = $fileSystem;
 	}
 
@@ -40,7 +38,7 @@ class CreatePluginService implements \Phi\Service {
 		$content = $this->fileSystem->read($templatePath);
 		$flags['classname'] = $className;
 		$flags['name'] = $this->nameTransform($flags['name']);
-		$content = $this->util->insertVariables($content, $flags);
+		$content = \Phi\Utils::insertVariables($content, $flags);
 		$this->fileSystem->writeRecursively($destination, $content);
 	}
 

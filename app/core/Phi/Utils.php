@@ -2,10 +2,12 @@
 
 namespace Phi;
 
+// static utility class
 class Utils {
 
-	public function arrayMergeRecursiveDistinct(array &$array1, array &$array2) {
+	public static function arrayMergeRecursiveDistinct(array $array1, array $array2) {
 		$merged = $array1;
+		$array2 = array_reverse($array2);
 		foreach ($array2 as $key => &$value)
 		{
 			if (is_numeric($key)) {
@@ -19,18 +21,11 @@ class Utils {
 		return $merged;
 	}
 
-	public function startsWith($haystack, $needle) {
-		return $needle === "" || strpos($haystack, $needle) === 0;
-	}
-	
-	public function endsWith($haystack, $needle) {
-		return $needle === "" || substr($haystack, -strlen($needle)) === $needle;
-	}
-
-	public function normalizeUrl($url) {
+	public static function normalizeUrl($url) {
 		$url = strtr($url, '\\', '/');
 		$url = preg_replace('#/+#','/',$url);
-		if (!preg_match('/^.*\\.(html|css|js)?$/i', $url)) {
+		$url = preg_replace('#/$#', '', $url);
+		if (!preg_match('/^.*\\.[a-zA-Z]+$/i', $url)) {
 			$url .= '/index.html';
 		}
 		// convert to absolute path
@@ -40,7 +35,7 @@ class Utils {
 		return $url;
 	}
 
-	public function insertVariables($str, $context) {
+	public static function insertVariables($str, $context) {
 		$pattern = '/:([a-zA-Z_]+)/m';	
 		$result = preg_replace_callback($pattern, function ($matches) use($context) {
 			if (!array_key_exists($matches[1], $context)) {

@@ -9,11 +9,6 @@ class Config {
 
 	private $path = NULL;
 	private $config = NULL;
-	private $util = NULL;
-
-	public function __construct(Utils $util) {
-		$this->util = $util;
-	}
 
 	public function setPath($path) {
 		if ($path != $this->path) {
@@ -24,7 +19,7 @@ class Config {
 
 	public function mergePath($path) {
 		$config = \spyc_load_file($path);
-		$this->config = $this->util->arrayMergeRecursiveDistinct($this->config, $config);
+		$this->config = \Phi\Utils::arrayMergeRecursiveDistinct($this->config, $config);
 	}
 
 	public function toArray() {
