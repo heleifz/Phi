@@ -5,6 +5,15 @@ namespace Phi;
 // static utility class
 class Utils {
 
+	public static function camelToLower($input) {
+		preg_match_all('!([A-Z][A-Z0-9]*(?=$|[A-Z][a-z0-9])|[A-Za-z][a-z0-9]+)!', $input, $matches);
+		$ret = $matches[0];
+		foreach ($ret as &$match) {
+			$match = $match == strtoupper($match) ? strtolower($match) : lcfirst($match);
+		}
+		return implode('-', $ret);
+	}
+
 	public static function arrayMergeRecursiveDistinct(array $array1, array $array2) {
 		$merged = $array1;
 		$array2 = array_reverse($array2);
@@ -13,7 +22,7 @@ class Utils {
 			if (is_numeric($key)) {
 				array_unshift($merged, $value);
 			} elseif (is_array($value) && isset($merged[$key]) && is_array($merged[$key])) {
-				$merged[$key] = $this->arrayMergeRecursiveDistinct($merged[$key], $value);
+				$merged[$key] = static::arrayMergeRecursiveDistinct($merged[$key], $value);
 			} else {
 				$merged[$key] = $value;
 			}

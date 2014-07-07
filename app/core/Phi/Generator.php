@@ -4,5 +4,5 @@ namespace Phi;
 
 interface Generator {
 	public function getName();
-	public function generate($context);
+	public function generate(\Phi\Context $context);
 }

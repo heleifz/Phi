@@ -11,7 +11,7 @@ class GeneratorDispatcher {
 
 	public function dispatch($name) {
 		if (!array_key_exists($name, $this->generatorMap)) {
-			return NULL;
+			throw new Exception("Unable to find generator : $name");
 		}
 		return $this->generatorMap[$name];
 	}

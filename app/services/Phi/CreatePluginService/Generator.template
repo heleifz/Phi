@@ -7,7 +7,7 @@ class :classname implements \Phi\Generator {
 		return ":name";
 	}
 
-	public function generate($context) {
+	public function generate(\Phi\Context $context) {
 		// generate result
 	}
 }
