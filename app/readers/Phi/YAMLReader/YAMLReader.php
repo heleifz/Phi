@@ -33,7 +33,7 @@ class YAMLReader implements \Phi\Reader {
 	private function parseFilename($path) {
 		$filename = $this->fileSystem->fileName($path);
 		$fields = explode('-', $filename, 4);
-		if (count($fields) != 4 || !checkdate($fields[1], $fields[2], $fields[0])) {
+		if (count($fields) != 4 || !checkdate((int)$fields[1], (int)$fields[2], (int)$fields[0])) {
 			$this->metadata["name"] = $filename;
 			$timestamp = $this->fileSystem->modificationTime($path);
 		} else {
