@@ -43,6 +43,7 @@ class Application extends \Illuminate\Container\Container {
 	}
 
 	public function start($argv) {
+		var_dump($argv);
 		$this->make('Phi\\ServiceDispatcher')->dispatch($argv);	
 	}
 }

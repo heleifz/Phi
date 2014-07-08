@@ -63,7 +63,9 @@ class Command {
 	}
 
 	public function setTokens(array $cli_tokens) {
-		// todo also slice on "=" or other delimiters
+		$this->arguments = array();
+		$this->flags = array();
+		$this->parsed = false;
 		$this->tokens = $cli_tokens;
 		return $this;
 	}

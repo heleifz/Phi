@@ -53,11 +53,12 @@ class TwigGenerator implements \Phi\Generator {
 				$oldContext['config']['destination'].'/'.$raw['relativeUrl'], $page); 
 				unset($oldContext['site']['articles'][$idx]);
 			} else {
-				// !! pre render the article content
+				// !! prerender the article content
 				// (it probably contains Twig structures)
 				$raw['content'] = $this->twig->render($raw['content'], $oldContext);
 			}
 		}
+		// throw away null entries
 		$oldContext['site']['articles'] =
 			array_values($oldContext['site']['articles']);
 		return $oldContext;
