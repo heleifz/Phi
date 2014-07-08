@@ -51,7 +51,7 @@ class YAMLReaderTest extends PHPUnit_Framework_TestCase {
 			array('2012-5-6-title.md', array('date' => '2012/05/06', 'short_date' => '12/5/6')),
 			array('2012-05-6-title.md', array('date' => '2012/05/06', 'short_date' => '12/5/6')),
 			array('/2012-5-06-title.md', array('date' => '2012/05/06', 'short_date' => '12/5/6')),
-			array('\\2012-05-06-title.md', array('date' => '2012/05/06', 'short_date' => '12/5/6')),
+			array("\\2012-05-06-title.md", array('date' => '2012/05/06', 'short_date' => '12/5/6')),
 			array('//2013-11-30-title.md', array('date' => '2013/11/30', 'short_date' => '13/11/30')),
 			array('title.md', array('date' => '2014/07/08', 'short_date' => '14/7/8')),
     	);

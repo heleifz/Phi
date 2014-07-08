@@ -31,6 +31,7 @@ class YAMLReader implements \Phi\Reader {
 	}
 
 	private function parseFilename($path) {
+		$path = str_replace('\\', '/', $path);
 		$filename = $this->fileSystem->fileName($path);
 		$fields = explode('-', $filename, 4);
 		if (count($fields) != 4 || !checkdate((int)$fields[1], (int)$fields[2], (int)$fields[0])) {
