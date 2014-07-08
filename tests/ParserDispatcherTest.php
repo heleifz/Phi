@@ -34,7 +34,7 @@ class ParserDispatcherTest extends PHPUnit_Framework_TestCase {
 			   ->andReturn('hello', 'world');
 		$this->fsMock->shouldReceive('getExtension')
 			 ->times(2)->andReturn('md', 'html');
-		$this->rdMock->shouldReceive('setPath')
+		$this->rdMock->shouldReceive('load')
 			 ->times(2);
 		$this->rdMock->shouldReceive('getBody')
 			 ->times(2)->andReturn('hellobody', 'worldbody');

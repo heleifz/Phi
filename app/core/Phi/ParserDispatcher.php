@@ -26,7 +26,7 @@ class ParserDispatcher {
 			new \Exception("Could not parse $ext file : $filepath.");
 		}
 		$parser = $this->parserMap[$ext];
-		$this->reader->setPath($filepath);
+		$this->reader->load($filepath);
 		$body = $parser->parse($this->reader->getBody());
 		$data = $this->reader->getMetadata();
 		$data['content'] = $body;

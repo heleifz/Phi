@@ -7,7 +7,7 @@ namespace Phi;
  */
 interface Reader {
 
-	public function setPath($path);
+	public function load($path);
 
 	public function getMetadata();
 

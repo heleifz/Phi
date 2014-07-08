@@ -15,7 +15,7 @@ class YAMLReader implements \Phi\Reader {
 		$this->fileSystem = $fileSystem;
 	}
 
-	public function setPath($path) {
+	public function load($path) {
 		$this->path = $path;
 		$this->text = $this->fileSystem->read($path);
 		$this->seperateParts($this->text);
