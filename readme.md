@@ -1,6 +1,8 @@
 # Phi
 
-# A Static Site Generator
+![travis](https://travis-ci.org/heleifz/Phi.svg?branch=master)
+
+## A Static Site Generator
 
 (Require PHP version >= 5.4)
 
