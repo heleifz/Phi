@@ -10,7 +10,7 @@
 			{{ page.content }}
 		</div>
 		<div class="one-third column">
-			<h3>Recent Articles</h3>
+			<h4>文章列表</h4>
 			<ul class="square">
 				{% for article in site.articles|sort_by_date_desc %}
 					<a href="{{ article.url }}">
