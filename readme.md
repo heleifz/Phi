@@ -16,7 +16,7 @@ After download the project, run:
 
 ```
 php composer.phar update
-php compile.php
+php -d phar.readonly=0 compile.php
 ```
 
 to compile the Phi archive file (phi.phar).
@@ -34,6 +34,8 @@ All articles reside in ```<project-dir>/articles``` directory (it is configurabl
 ```
 YEAR-MONTH-DAY-NAME.***
 ```
+
+(if filename does not follow this pattern, the date properties will be determined by modification time of the file.)
 
 ### 3. Design the templates
 
