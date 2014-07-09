@@ -1,6 +1,8 @@
 <?php
 
-class ContextTest extends PHPUnit_Framework_TestCase {
+namespace Phi;
+
+class ContextTest extends \PHPUnit_Framework_TestCase {
 
 	private $dataPath;
 

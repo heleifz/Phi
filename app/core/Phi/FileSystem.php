@@ -86,13 +86,18 @@ class FileSystem {
 		$this->finder->files()
 		      		 ->ignoreVCS($ignoreVCS)
 		       		 ->in($path);
-		$result = array_map(function ($file) {
+		$arr = array_map(function ($file) {
 			return array(
 				'relative' => $file->getRelativePathname(),
 				'filename' => $file->getFileName(),
 				'relativeDir' => $file->getRelativePath()
 			);
 		}, iterator_to_array($this->finder));
+		$result = array();
+		foreach ($arr as $k => $v) {
+			$v['absolute'] = $k;
+			$result[] = $v;
+		}
 		return $result;
 	}
 

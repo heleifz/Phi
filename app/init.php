@@ -7,12 +7,7 @@ $app = new Phi\Application;
 /**
  * Set custom error handler
  */
-$app->instance('Phi\\ErrorHandler', $app->make('Phi\\ErrorHandler'));
-
-/**
- * Set metadata reader
- */
-$app->bind('Phi\\Reader', 'Phi\\YAMLReader\\YAMLReader');
+// $app->instance('Phi\\ErrorHandler', $app->make('Phi\\ErrorHandler'));
 
 /**
  * Register generators

@@ -6,11 +6,9 @@ class ParserDispatcher {
 
 	private $parserMap;
 	private $fileSystem;
-	private $reader;
 
-	public function __construct(\Phi\FileSystem $fileSystem, \Phi\Reader $reader) {
+	public function __construct(\Phi\FileSystem $fileSystem) {
 		$this->fileSystem = $fileSystem;
-		$this->reader = $reader;
 	}
 
 	public function register(Parser $parser) {
@@ -23,14 +21,10 @@ class ParserDispatcher {
 	public function dispatch($filepath) {
 		$ext = $this->fileSystem->getExtension($filepath);
 		if (!array_key_exists($ext, $this->parserMap)) {
-			new \Exception("Could not parse $ext file : $filepath.");
+			new \Exception("Unable to find parser for $ext file : $filepath.");
 		}
 		$parser = $this->parserMap[$ext];
-		$this->reader->load($filepath);
-		$body = $parser->parse($this->reader->getBody());
-		$data = $this->reader->getMetadata();
-		$data['content'] = $body;
-		return $data;
+		return $parser;
 	}
 
 	public function getExtensions() {

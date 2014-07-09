@@ -1,6 +1,8 @@
 <?php
 
-class UtilsTest extends PHPUnit_Framework_TestCase {
+namespace Phi;
+
+class UtilsTest extends \PHPUnit_Framework_TestCase {
 
     /**
      * @dataProvider urlDataProvider

@@ -9,12 +9,12 @@ class GenerateService implements \Phi\Service {
 	private $renderer;
 	private $fileSystem;
 	private $pluginManager;
-	private $articleCollector;
+	private $articleReader;
 
 	private $path;
 
 	public function __construct(\Phi\PluginManager $pluginManager,
-								\Phi\ArticleCollector $articleCollector,
+								ArticleReader $articleReader,
 								\Phi\GeneratorDispatcher $generator,
 								\Phi\FileSystem $fileSystem,
 								\Phi\Console $console,
@@ -23,7 +23,7 @@ class GenerateService implements \Phi\Service {
 		$this->pluginManager = $pluginManager;
 		$this->context = $context;
 		$this->console = $console;
-		$this->articleCollector = $articleCollector;
+		$this->articleReader = $articleReader;
 		$this->generator = $generator;
 		$this->fileSystem = $fileSystem;
 	}
@@ -38,7 +38,11 @@ class GenerateService implements \Phi\Service {
 
 	public function execute($arguments, $flags) {
 		$this->initialize($arguments[0]);
-		$this->articleCollector->collect($this->path.'/'.$this->context->get('config.source'));
+		$sources = $this->getArticlePath($this->path.'/'.$this->context->get('config.source'));
+		$articles = array_map(array($this->articleReader, 'read'), $sources);
+		$urlMap = $this->generateUrlMap($articles);
+		$this->context->merge(new \Phi\Context($articles), 'site.articles');
+		$this->context->merge(new \Phi\Context($urlMap), 'site.url_map');
 		$generatorName = $this->context->get('config.generator');
 		$this->console->write('Generating pages...');
 		$this->generator->dispatch($generatorName)->generate($this->context);
@@ -53,6 +57,21 @@ class GenerateService implements \Phi\Service {
 			 ->setValidator(array($this->fileSystem, 'isDirectory'),
 			 	            "Invalid Phi application path");
 		return array($path);
+	}
+
+	private function generateUrlMap($articles) {
+		$result = array();
+		foreach ($articles as $article) {
+			$result[$article['id']] = $article['url'];
+		}
+		return $result;
+	}
+
+	private function getArticlePath($path) {
+		return $this->fileSystem->walk($path, true /* ignore VCS */,
+			$this->articleReader->getExtensions(),
+			$this->context->get('config.exclude_path') ? $this->context->get('config.exclude_path') : array(),
+			$this->context->get('config.exclude_name') ? $this->context->get('config.exclude_name') : array());
 	}
 
 	private function initialize($path) {
@@ -84,4 +103,5 @@ class GenerateService implements \Phi\Service {
 		));
 		$this->context->merge($baseContext);
 	}
+
 }

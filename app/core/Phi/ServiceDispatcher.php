@@ -5,18 +5,23 @@ namespace Phi;
 class ServiceDispatcher {
 
 	private $serviceMap = array();
+	private $console;
+
+	public function __construct(\Phi\Console $console) {
+		$this->console = $console;
+	}
 
 	public function dispatch($arguments) {
 		if (count($arguments) == 1) {
-			echo $this->getHelp();
-			exit;
+			$this->console->write($this->getHelp());
+			return;
 		}
 		array_shift($arguments);
 		$serviceName = $arguments[0];
 		if (!array_key_exists($serviceName, $this->serviceMap)) {
-			echo "Illegal command, please try again.".PHP_EOL;
-			echo $this->getHelp();
-			exit;
+			$this->console->write("Illegal command, please try again.".PHP_EOL);
+			$this->console->write($this->getHelp());
+			return;
 		}
 		$service = $this->serviceMap[$serviceName];
 		$command = new Command($service->getCommandOptions());

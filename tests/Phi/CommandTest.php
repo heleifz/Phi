@@ -1,6 +1,8 @@
 <?php
 
-class CommandTest extends PHPUnit_Framework_TestCase {
+namespace Phi;
+
+class CommandTest extends \PHPUnit_Framework_TestCase {
 
     private $options;
 

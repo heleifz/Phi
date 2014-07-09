@@ -15,9 +15,9 @@ class PluginManager {
 	public function registerDirectory($path) {
 		$files = $this->fileSystem->walk($path, true,
 			array('php'), array(), array(), '< 1'); 
-		foreach ($files as $file => $pathinfo) {
-			$this->fileSystem->includeOnce($file);
-			$className = $this->fileSystem->fileName($file);
+		foreach ($files as $pathinfo) {
+			$this->fileSystem->includeOnce($pathinfo['absolute']);
+			$className = $this->fileSystem->fileName($pathinfo['absolute']);
 			$this->register($className);
 		}
 	}
