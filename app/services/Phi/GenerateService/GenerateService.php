@@ -44,10 +44,9 @@ class GenerateService implements \Phi\Service {
 		$this->context->merge(new \Phi\Context($articles), 'site.articles');
 		$this->context->merge(new \Phi\Context($urlMap), 'site.url_map');
 		$generatorName = $this->context->get('config.generator');
-		$this->console->write('Generating pages...');
+		$this->console->writeLine('Generating pages...');
 		$this->generator->dispatch($generatorName)->generate($this->context);
 		$this->console->writeLine('done.');
-		$this->console->writeLine('Success!');
 	}
 
 	public function getCommandOptions() {

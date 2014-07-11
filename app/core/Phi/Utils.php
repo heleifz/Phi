@@ -30,6 +30,36 @@ class Utils {
 		return $merged;
 	}
 
+	public static function excerpt($html, $tag) {
+		$pattern = '#<'.$tag.'[^>]*>|</'.$tag.'>#im';
+		$result = preg_match($pattern, $html, $matches, PREG_OFFSET_CAPTURE);
+		if ($result !== 1) {
+			return strip_tags($html);
+		}
+		$initPos = $matches[0][1];
+		$stack = array($initPos);
+		$offSet = $initPos + strlen($matches[0][0]);
+		while (!empty($stack)) {
+			$result = preg_match($pattern, $html, $matches,
+							   PREG_OFFSET_CAPTURE, $offSet);
+			// fallback
+			if ($result !== 1) {
+				return strip_tags(substr($html, $initPos));
+			}
+			$isClose = $matches[0][0][1] == '/';
+			if (!$isClose) {
+				array_push($stack, $matches[0][1]);
+				$offSet = strlen($matches[0][0]) + $matches[0][1];
+			} else {
+				$pos = array_pop($stack);
+				if (empty($stack)) {
+					return strip_tags(substr($html, $pos, $matches[0][1] - $pos));
+				}
+				$offSet = strlen($matches[0][0]) + $matches[0][1];
+			}
+		}
+	}
+
 	public static function normalizeUrl($url) {
 		$url = strtr($url, '\\', '/');
 		$url = preg_replace('#/+#','/',$url);

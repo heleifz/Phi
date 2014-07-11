@@ -6,23 +6,27 @@ class ArticleReader {
 
 	private $fileSystem;
 	private $context;
+	private $console;
 	private $parsers;
 	private $frontMatter;
 	private $filenameParser;
 
 	public function __construct(\Phi\FileSystem $fileSystem,
 								\Phi\Context $context,
+								\Phi\Console $console,
 								\Phi\FilenameParser $filenameParser,
 								\Phi\ParserDispatcher $parsers,
 								\Phi\FrontMatter $frontMatter) {
 		$this->fileSystem = $fileSystem;
 		$this->context = $context;
+		$this->console = $console;
 		$this->parsers = $parsers;
 		$this->frontMatter = $frontMatter;
 		$this->filenameParser = $filenameParser;
 	}
 
 	public function read($pathinfo) {
+		$this->console->writeLine('Parsing '.$pathinfo['relative']);
 		$abs = $pathinfo['absolute'];
 		$defaults = $this->context->get('config.defaults');
 		$defaults = $this->normalizeDefaults($defaults);

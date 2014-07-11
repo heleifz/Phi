@@ -5,10 +5,12 @@ namespace Phi\TwigGenerator;
 class TwigGenerator implements \Phi\Generator {
 
 	private $fileSystem;
+	private $console;
 	private $twig;
 
-	public function __construct(\Phi\FileSystem $fileSystem) {
+	public function __construct(\Phi\FileSystem $fileSystem, \Phi\Console $console) {
 		$this->fileSystem = $fileSystem;
+		$this->console = $console;
 	}
 
 	public function getName() {
@@ -28,12 +30,25 @@ class TwigGenerator implements \Phi\Generator {
 
 	private function render($context) {
 		// render pages
-		$articles = $this->addLinks($context['site']['articles']);
+		$articles = &$context['site']['articles'];
 		$total = count($articles);
+		for ($i = 0; $i < $total; $i++) {
+			if ($i > 0) {
+				$articles[$i]['previous_article'] = &$articles[$i - 1];
+			} else {
+				$articles[$i]['previous_article'] = NULL;
+			}
+			if ($i < ($total - 1)) {
+				$articles[$i]['next_article'] = &$articles[$i + 1];
+			} else {
+				$articles[$i]['next_article'] = NULL;
+			}
+		}
 		// rendering every page	
 		for ($i = 0; $i < $total; $i++) {
-			$current = $articles[$i];
-			$context['page'] = $current; 
+			$current = &$articles[$i];
+			$this->console->writeLine('Generating '.$current['relative_url']);
+			$context['page'] = &$current; 
 			if (isset($current['paginator'])) {
 				$paginator = new \Phi\Paginator($current, $context);
 				$pages = $paginator->getPages();
@@ -49,17 +64,6 @@ class TwigGenerator implements \Phi\Generator {
 					$context['config']['destination'].'/'.$current['relative_url'], $page); 
 			}
 		}	
-	}
-
-	private function addLinks($articles) {
-		$total = count($articles);
-		for ($i = 0; $i < $total; $i++) {
-			$articles[$i]['previous_article'] = $i > 0 ? $articles[$i - 1] : NULL;
-		}
-		for ($i = $total - 1; $i > -1; $i--) {
-			$articles[$i]['next_article'] = $i < ($total - 1) ? $articles[$i + 1] : NULL;
-		}
-		return $articles;
 	}
 
 	private function preRender($oldContext) {
@@ -88,7 +92,8 @@ class TwigGenerator implements \Phi\Generator {
 	private function initializeTwig($context) {
 		$twig = new \Twig_Environment(new \Twig_Loader_String(), array(
 			'autoescape' => false,
-			'charset' => $context['site']['encoding']
+			'cache' => false,
+			'charset' => $context['site']['encoding'],
 		));
 		$twig->addExtension(new PhiExtension($context));
 		$twig->addTokenParser(new JsTokenParser($context['site']['root']));

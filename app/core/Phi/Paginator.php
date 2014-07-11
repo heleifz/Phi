@@ -27,10 +27,16 @@ class Paginator {
 			$pages[$i]['total'] = $total;
 		}
 		for ($i = 0; $i < $total; $i++) {
-			$pages[$i]['previous_page'] = $i == 0 ? NULL : $pages[$i - 1];
-		}
-		for ($i = $total - 1; $i > -1; $i--) {
-			$pages[$i]['next_page'] = $i == $total - 1 ? NULL : $pages[$i + 1];
+			if ($i > 0) {
+				$pages[$i]['previous_page'] = &$pages[$i - 1];
+			} else {
+				$pages[$i]['previous_page'] = NULL;
+			}
+			if ($i < $total - 1) {
+				$pages[$i]['next_page'] = &$pages[$i + 1];
+			} else {
+				$pages[$i]['next_page'] = NULL;
+			}
 		}
 		return $pages;
 	}

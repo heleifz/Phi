@@ -2,9 +2,6 @@
 
 namespace Phi\TwigGenerator;
 
-// use simple_html_dom to extract excerpt
-require __DIR__.'/simple_html_dom.php';
-
 class PhiExtension extends \Twig_Extension {
 
 	private $context;
@@ -43,15 +40,8 @@ class PhiExtension extends \Twig_Extension {
 		}
 	}
 
-	public function excerptFilter($html, $selector='p') {
-		$dom = new \simple_html_dom();
-		$dom->load($html);
-		$ret = $dom->find($selector, 0); 
-		if ($ret) {
-			return $ret->plaintext;
-		} else {
-			return strip_tags($html);
-		}
+	public function excerptFilter($html, $tag='p') {
+		return \Phi\Utils::excerpt($html, $tag);
 	}
 
 	public function truncateFilter($text, $maxChar) {
@@ -124,9 +114,7 @@ class PhiExtension extends \Twig_Extension {
 	public function stableSortFilter($field, $method, $arr) {
 		$a = $arr;
 		if ($field == 'date') {
-			$this->mergesort($a, 'day');
-			$this->mergesort($a, 'month');
-			$this->mergesort($a, 'year');
+			$this->mergesort($a, 'timestamp');
 		} else {
 			$this->mergesort($a, $field);
 		}

@@ -38,6 +38,31 @@ class UtilsTest extends \PHPUnit_Framework_TestCase {
         $this->assertFalse(\Phi\Utils::isInt('33aa'));
     }
 
+    /**
+     * @dataProvider excerptProvider
+     */
+    public function testExcerpt($html, $tag, $expected) {
+        $this->assertEquals($expected, \Phi\Utils::excerpt($html, $tag));
+    }
+
+    public function excerptProvider() {
+        return array(
+            array('helloworld', 'p', 'helloworld'),
+            array('<p>helloworld</p>', 'p', 'helloworld'),
+            array('<p>helloworld</p>asdfasdf<p>sadfasdf</p>', 'p', 'helloworld'),
+            array('<p>hello<h1>world</h1></p>asdfasdf<p>sadfasdf</p>', 'p', 'helloworld'),
+            array('<p>hello<p>world</p></p>asdfasdf<p>sadfasdf</p>', 'p', 'helloworld'),
+            array('<p>hello<p>world</p></p>asdfasdf<p>sadfasdf</p>', 'p', 'helloworld'),
+            array('<p>hello<p>w<p>or</p>ld</p></p>asdfasdf<p>sadfasdf</p>', 'p', 'helloworld'),
+            array('<p>helloworld', 'p', 'helloworld'),
+            array('<p>hel<p>loworld', 'p', 'helloworld'),
+            array('<p>hel<p>lo</p>world', 'p', 'helloworld'),
+            array('<p>中文内容测试</p>', 'p', '中文内容测试'),
+            array('<p>中<p>文</p>内容测试</p>测试测试', 'p', '中文内容测试'),
+            array('<p class="hello">hel<p id="3">lo</p>world', 'p', 'helloworld'),
+        );
+    }
+
     public function camelProvider() {
         return array(
             array('helloWorld', 'hello-world'),

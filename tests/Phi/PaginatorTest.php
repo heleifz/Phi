@@ -42,9 +42,4 @@ class PaginatorTest extends \PHPUnit_Framework_TestCase {
 		);
 		$p = new Paginator($article, array());
 	}
-
-	public function testGetPages() {
-		
-	}
-
 }
