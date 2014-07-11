@@ -33,32 +33,23 @@ class ArticleReader {
 		$article['content'] = $parser->parse($raw['content']);
 		$article['dir'] = $pathinfo['relativeDir'];
 		$dateAndName = $this->filenameParser->parse($abs);
+
 		$article = array_merge($article, $dateAndName);
 		$default = $this->mergeDefaults($pathinfo['relative'], $defaults);
 		$article = \Phi\Utils::arrayMergeRecursiveDistinct($default, $article);
-		$article = $this->resolveVariables($article);	
+		$article = \Phi\VariableResolver::resolveArray($article, $article, array('content'));
 		$id = trim($article['dir'].'/'.$this->fileSystem->fileName($pathinfo['absolute']), '/\\');
 		$url = \Phi\Utils::normalizeUrl($article['url']);
+
 		// id is original article relative path (without extension)
 		$article['id'] = $id;
-		$article['relativeUrl'] = $url;
+		$article['relative_url'] = $url;
 		$article['url'] = $this->context->get('site.root').$url;
 		return $article;
 	}
 
 	public function getExtensions() {
 		return $this->parsers->getExtensions();
-	}
-
-	private function resolveVariables($metadata) {
-		// substitude variables
-		foreach ($metadata as $k => $v) {
-			// do not substitude content part
-			if ($k != 'content' && is_string($v)) {
-				$metadata[$k] = \Phi\Utils::insertVariables($v, $metadata);
-			}
-		}	
-		return $metadata;
 	}
 
 	private function normalizeDefaults($defaults) {

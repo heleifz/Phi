@@ -28,18 +28,38 @@ class TwigGenerator implements \Phi\Generator {
 
 	private function render($context) {
 		// render pages
-		$articles = $context['site']['articles'];
+		$articles = $this->addLinks($context['site']['articles']);
 		$total = count($articles);
 		// rendering every page	
 		for ($i = 0; $i < $total; $i++) {
 			$current = $articles[$i];
-			$current['previous_article'] = $i > 0 ? $articles[$i - 1] : NULL;
-			$current['next_article'] = $i < ($total - 1) ? $articles[$i + 1] : NULL;
 			$context['page'] = $current; 
-			$page = $this->twig->render($current['template'], $context);
-			$this->fileSystem->writeRecursively($context['site']['project'].'/'.
-				$context['config']['destination'].'/'.$current['relativeUrl'], $page); 
+			if (isset($current['paginator'])) {
+				$paginator = new \Phi\Paginator($current, $context);
+				$pages = $paginator->getPages();
+				foreach ($pages as $p) {
+					$context['page']['paginator'] = $p;
+					$page = $this->twig->render($current['template'], $context);
+					$this->fileSystem->writeRecursively($context['site']['project'].'/'.
+						$context['config']['destination'].'/'.$p['relative_url'], $page); 
+				}
+			} else {
+				$page = $this->twig->render($current['template'], $context);
+				$this->fileSystem->writeRecursively($context['site']['project'].'/'.
+					$context['config']['destination'].'/'.$current['relative_url'], $page); 
+			}
 		}	
+	}
+
+	private function addLinks($articles) {
+		$total = count($articles);
+		for ($i = 0; $i < $total; $i++) {
+			$articles[$i]['previous_article'] = $i > 0 ? $articles[$i - 1] : NULL;
+		}
+		for ($i = $total - 1; $i > -1; $i--) {
+			$articles[$i]['next_article'] = $i < ($total - 1) ? $articles[$i + 1] : NULL;
+		}
+		return $articles;
 	}
 
 	private function preRender($oldContext) {
@@ -50,11 +70,12 @@ class TwigGenerator implements \Phi\Generator {
 				$oldContext['page'] = $raw;
 				$page = $this->twig->render("{{ page.content }}", $oldContext);
 				$this->fileSystem->writeRecursively($projectPath.'/'.
-				$oldContext['config']['destination'].'/'.$raw['relativeUrl'], $page); 
+				$oldContext['config']['destination'].'/'.$raw['relative_url'], $page); 
 				unset($oldContext['site']['articles'][$idx]);
 			} else {
 				// !! prerender the article content
 				// (it probably contains Twig structures)
+				$oldContext['page'] = $raw;
 				$raw['content'] = $this->twig->render($raw['content'], $oldContext);
 			}
 		}

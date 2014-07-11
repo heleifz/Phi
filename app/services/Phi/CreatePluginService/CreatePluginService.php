@@ -38,7 +38,7 @@ class CreatePluginService implements \Phi\Service {
 		$content = $this->fileSystem->read($templatePath);
 		$flags['classname'] = $className;
 		$flags['name'] = \Phi\Utils::camelToLower($flags['name']);
-		$content = \Phi\Utils::insertVariables($content, $flags);
+		$content = \Phi\VariableResolver::resolveString($content, $flags);
 		$this->fileSystem->writeRecursively($destination, $content);
 	}
 

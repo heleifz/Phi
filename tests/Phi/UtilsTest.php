@@ -12,14 +12,6 @@ class UtilsTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @dataProvider insertVariablesProvider
-     */
-    public function testInsertVariables($template, $context, $expected) {
-        $this->assertEquals($expected,
-            \Phi\Utils::insertVariables($template, $context));
-    }
-
-    /**
      * @dataProvider mergeArrayProvider
      */
     public function testArrayMergeRecursiveDistinct($arr1, $arr2, $expected) {
@@ -32,6 +24,18 @@ class UtilsTest extends \PHPUnit_Framework_TestCase {
      */
     public function testCamelToLower($camel, $expected) {
         $this->assertEquals($expected, \Phi\Utils::camelToLower($camel));
+    }
+
+    public function testIsInt() {
+        $this->assertTrue(\Phi\Utils::isInt(3));
+        $this->assertTrue(\Phi\Utils::isInt(33));
+        $this->assertTrue(\Phi\Utils::isInt(334));
+        $this->assertTrue(\Phi\Utils::isInt('334'));
+        $this->assertTrue(\Phi\Utils::isInt('3324334'));
+        $this->assertFalse(\Phi\Utils::isInt(3.1));
+        $this->assertFalse(\Phi\Utils::isInt(33.33));
+        $this->assertFalse(\Phi\Utils::isInt('33.33'));
+        $this->assertFalse(\Phi\Utils::isInt('33aa'));
     }
 
     public function camelProvider() {
@@ -56,17 +60,6 @@ class UtilsTest extends \PHPUnit_Framework_TestCase {
                 array('a' => 4), array('a' => 4)),
             array(array('a' => 4), array('a' => array(1, 2, 3)),
                 array('a' => array(1, 2, 3))),
-        );
-    }
-
-    public function insertVariablesProvider() {
-        return array(
-            array(':hello', array('hello' => 3), '3'),
-            array(':hello:world', array('hello' => 3, 'world' => 'abc'), '3abc'),
-            array('::hello:world', array('hello' => 3, 'world' => 'abc'), ':3abc'),
-            array(':this:is:url', array('this' => '/', 'is' => 'foo', 'url' => '/bar'), '/foo/bar'),
-            array(':foo:bar', array('bar' => 'abc'), ':fooabc'),
-            array(':foo:bar', array(), ':foo:bar'),
         );
     }
 

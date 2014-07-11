@@ -44,14 +44,7 @@ class Utils {
 		return $url;
 	}
 
-	public static function insertVariables($str, $context) {
-		$pattern = '/:([a-zA-Z_]+)/m';	
-		$result = preg_replace_callback($pattern, function ($matches) use($context) {
-			if (!array_key_exists($matches[1], $context)) {
-				return $matches[0];
-			}
-			return $context[$matches[1]];
-		}, $str);
-		return $result;
+	public static function isInt($num) {
+		return ctype_digit($num) || is_int($num);
 	}
 }
