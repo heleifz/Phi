@@ -13,11 +13,6 @@ class Paginator {
 		$this->context = $context;
 	}
 
-	public function totalPage() {
-		return (int)ceil(count($this->context['site']['articles']) /
-				    $this->article['paginator']['per_page']);
-	}
-
 	public function getPages() {
 		$pages = $this->fillPageUrl($this->article['paginator']);
 		if (count($pages) > 0) {
@@ -38,6 +33,11 @@ class Paginator {
 			$pages[$i]['next_page'] = $i == $total - 1 ? NULL : $pages[$i + 1];
 		}
 		return $pages;
+	}
+
+	private function totalPage() {
+		return (int)ceil(count($this->context['site']['articles']) /
+				    $this->article['paginator']['per_page']);
 	}
 
 	private function fillPageUrl($paginator) {

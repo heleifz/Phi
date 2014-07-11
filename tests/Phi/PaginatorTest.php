@@ -43,27 +43,6 @@ class PaginatorTest extends \PHPUnit_Framework_TestCase {
 		$p = new Paginator($article, array());
 	}
 
-	public function testTotalPage() {
-		$article = array('title' => 'test', 'paginator' => array(
-			'per_page' => 1,
-			'page_url' => 'foobar:num.html')
-		);
-		$p = new Paginator($article, array('articles' => array('a', 'b', 'c')));
-		$this->assertEquals(3, $p->totalPage());
-		$article = array('title' => 'test', 'paginator' => array(
-			'per_page' => 2,
-			'page_url' => 'foobar:num.html')
-		);
-		$p = new Paginator($article, array('articles' => array('a', 'b', 'c')));
-		$this->assertEquals(2, $p->totalPage());
-		$article = array('title' => 'test', 'paginator' => array(
-			'per_page' => 4,
-			'page_url' => 'foobar:num.html')
-		);
-		$p = new Paginator($article, array('articles' => array('a', 'b', 'c')));
-		$this->assertEquals(1, $p->totalPage());
-	}
-
 	public function testGetPages() {
 		
 	}
