@@ -7,6 +7,7 @@ class TwigGenerator implements \Phi\Generator {
 	private $fileSystem;
 	private $console;
 	private $twig;
+	private $templatePath;
 
 	public function __construct(\Phi\FileSystem $fileSystem, \Phi\Console $console) {
 		$this->fileSystem = $fileSystem;
@@ -19,18 +20,16 @@ class TwigGenerator implements \Phi\Generator {
 
 	public function generate(\Phi\Context $context) {
 		$context = $context->toArray();
+		$this->templatePath = $context['site']['project'].'/'.$context['config']['templates'];
 		$this->initializeTwig($context);
-		$context = $this->preRender($context);
-		// Set filesystem loader
-		$templatePath = $context['site']['project'].'/'.$context['config']['templates'];
-		$loader = new \Twig_Loader_Filesystem($templatePath);
-		$this->twig->setLoader($loader);
+		$context = $this->renderAssets($context);
 		$this->render($context);
 	}
 
 	private function render($context) {
 		// render pages
 		$articles = &$context['site']['articles'];
+		$this->addLinks($articles);
 		$total = count($articles);
 		for ($i = 0; $i < $total; $i++) {
 			if ($i > 0) {
@@ -51,22 +50,46 @@ class TwigGenerator implements \Phi\Generator {
 			$context['page'] = &$current; 
 			if (isset($current['paginator'])) {
 				$paginator = new \Phi\Paginator($current, $context);
-				$pages = $paginator->getPages();
-				foreach ($pages as $p) {
+				foreach ($paginator->getPages() as $p) {
 					$context['page']['paginator'] = $p;
-					$page = $this->twig->render($current['template'], $context);
+					$page = $this->renderPage($context);
 					$this->fileSystem->writeRecursively($context['site']['project'].'/'.
 						$context['config']['destination'].'/'.$p['relative_url'], $page); 
 				}
 			} else {
-				$page = $this->twig->render($current['template'], $context);
+				$page = $this->renderPage($context);
 				$this->fileSystem->writeRecursively($context['site']['project'].'/'.
 					$context['config']['destination'].'/'.$current['relative_url'], $page); 
 			}
 		}	
 	}
 
-	private function preRender($oldContext) {
+	private function addLinks(&$articles) {
+		$total = count($articles);
+		for ($i = 0; $i < $total; $i++) {
+			if ($i > 0) {
+				$articles[$i]['previous_article'] = &$articles[$i - 1];
+			} else {
+				$articles[$i]['previous_article'] = NULL;
+			}
+			if ($i < ($total - 1)) {
+				$articles[$i]['next_article'] = &$articles[$i + 1];
+			} else {
+				$articles[$i]['next_article'] = NULL;
+			}
+		}
+	}
+
+	private function renderPage($context) {
+		// render page content
+		$this->twig->setLoader(new \Twig_Loader_String());
+		$context['page']['content'] =
+			$this->twig->render($context['page']['content'], $context);
+		$this->twig->setLoader(new \Twig_Loader_Filesystem($this->templatePath));
+		return $this->twig->render($context['page']['template'], $context);
+	}
+
+	private function renderAssets($oldContext) {
 		// Preprocessings : render assets, resolve nested template
 		foreach ($oldContext['site']['articles'] as $idx => &$raw) {
 			if ($raw['template'] == '*asset*') {
@@ -76,11 +99,6 @@ class TwigGenerator implements \Phi\Generator {
 				$this->fileSystem->writeRecursively($projectPath.'/'.
 				$oldContext['config']['destination'].'/'.$raw['relative_url'], $page); 
 				unset($oldContext['site']['articles'][$idx]);
-			} else {
-				// !! prerender the article content
-				// (it probably contains Twig structures)
-				$oldContext['page'] = $raw;
-				$raw['content'] = $this->twig->render($raw['content'], $oldContext);
 			}
 		}
 		// throw away null entries
